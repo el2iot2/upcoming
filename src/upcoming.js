@@ -1,11 +1,11 @@
 var upcoming = function(){
 	var a = [1,2,3];
-   function abc(){
+   function _render(){
      return (a[0]*a[1])+a[2]);
    }
 
    return {
       name: 'revealed',
-      abcfn: abc
+      render: _render
    }
 }();
