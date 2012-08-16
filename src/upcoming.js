@@ -1,16 +1,60 @@
 var upcoming = function () {
 	"use strict";
 	//All managed calendar instances
-	var instances = {};
+	var instances = {}, feeds = {}, feedInstances = {};
 
 	//primary entry point
-	function internalRender(config) {
-		config.id = config.id || "upcoming-div";
-		config.cal_evt_max = config.cal_evt_max || 15;
-		instances[config.id] = { config: config};
+	function publicRender(config) {
+		var i, instance, id, signature;
+		instance = instances[config.id] = {
+			id: config.id || "upcoming-div",
+			max_results: config.max_results || 15
+		};
+		instance.div_root = document.getElementById(instance.id);
+		instance.div_status = document.createElement('div');
+		instance.div_status.setAttribute('class', 'status');
+		instance.div_status.setAttribute('id', instance.id + '_status');
+		instance.div_evts = document.createElement('div');
+		instance.div_evts.setAttribute('class', 'evts');
+		instance.div_evts.setAttribute('id', instance.id + '_evts');
+		instance.div_root.appendChild(instance.div_status);
+		instance.div_root.appendChild(instance.div_evts);
+		instance.loadingFeedCount = instance.loadedFeedCount = 0;
+
+		for (i = 0; i < config.feeds.length; i++) {
+			id = "http://www.google.com/calendar/feeds/" +
+				encodeURIComponent(config.feeds[i]) +
+				"/public/full";
+			signature = id + "_" + instance.max_results;
+			if (!(id in feeds))
+			{
+				//create a feed entry
+				var newFeed = feeds[id] = {
+					instances: {}
+				};
+				instance.loadingFeedCount++;
+				//and indicate an association with the instance
+				newFeed.instances[instance.id]=instance;
+				//and begin retrieving data
+				document.write("<script type='text/javascript' "+
+					"src='"+ 
+					id + 
+					"?alt=json-in-script&callback=upcoming.callback"+
+					"&orderby=starttime"+
+					"&max-results="+instance.max_results+
+					"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
+			}
+			else
+			{
+				//indicate an association with the instance
+				feeds[id].instances[instance.id]=instance;
+				instance.loadedFeedCount++;
+			}
+			progress(instance, "Loading Events...")
+		}
 	}
 
-	function on_feed_completed(root) {
+	function publicCallback(root) {
 		var iFeed = this.feeds.length;
 		feeds[root.feed.title.$t] = root.feed;
 		var iStart = this.evts.length;
@@ -64,35 +108,7 @@ var upcoming = function () {
 			render_evts();
 	}
 
-	render = function()
-	{
-		feeds_left = feeds_total = params.feeds.length;
-
-		div.root = document.getElementById(params.id);
-		
-		div.status = document.createElement('div');
-		div.status.setAttribute('class', 'status');
-		div.status.setAttribute('id', 'status');
-		
-		div.evts = document.createElement('div');
-		div.evts.setAttribute('class', 'evts');
-		div.evts.setAttribute('id', 'evts');
-		
-		div.root.appendChild(div.status);
-		div.root.appendChild(div.evts);
-		
-		progress("Loading Events...", 0, feeds_total+2);
-		for (var i=0; i < params.feeds.length; i++ )
-		{
-			document.write("<script type='text/javascript' "+
-							"src='http://www.google.com/calendar/feeds/"+ 
-							params.feeds[i]+ 
-							"/public/full?alt=json-in-script&callback=Gcv.on_feed_completed"+
-							"&orderby=starttime"+
-							"&max-results="+params.cal_evt_max+
-							"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
-		}
-	}
+	
 
 	function progress(msg, loc, total)
 	{
@@ -558,6 +574,7 @@ var upcoming = function () {
 		return ld;
 	}
 	return {
-	render: internalRender
+		render: publicRender,
+		callback: publicCallback
 	}
 }
