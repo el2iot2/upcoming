@@ -4,39 +4,66 @@ var upcoming = function () {
 	var 
 		instances = {}, //instances by div id
 		feeds = {},  //feeds by uri
-		publicCallbacks = {}; //callbacks by feedInstanceId
-		
+		publicCallbacks = {}, //callbacks by feedInstanceId
+		res = upcoming_res || { //load resources, or fallback to EN default
+			default_div_id: "upcoming",
+			err_format_cannot_render: "Upcoming.js cannot render to element '{0}'. Does this id exist?",
+		}; 
 
 	//primary entry point
 	function publicRender(config) {
 		var i, instance, feedUri, feedInstanceId, feedId, feed;
 		instance = instances[config.id] = {
-			id: config.id || "upcoming-div",
-			max_results: config.max_results || 15
+			id: config.id || res.default_div_id,
+			max_results: config.max_results || 15,
+			feeds: {},
+			ui: { //Details about html ui for instance
+				div: null, //Root div
+				progress: { //Progress/status ui
+					div: null, //Created div
+					steps: 0, //Total number of steps in progress
+					step: 0 //Current step 
+				},
+				evts { //Event display ui
+					div: null, //Created div
+				},
+			}
 		};
-		instance.div_root = document.getElementById(instance.id);
-		instance.div_status = document.createElement('div');
-		instance.div_status.setAttribute('class', 'status');
-		instance.div_status.setAttribute('id', instance.id + '_status');
-		instance.div_evts = document.createElement('div');
-		instance.div_evts.setAttribute('class', 'evts');
-		instance.div_evts.setAttribute('id', instance.id + '_evts');
-		instance.div_root.appendChild(instance.div_status);
-		instance.div_root.appendChild(instance.div_evts);
-		instance.prog_steps = instance.prog_step = 0;
+		
+		//Find root instance id
+		instance.ui.div = document.getElementById(instance.id);
+		if (instance.ui.div === null) {
+			formatError(res.err_format_cannot_render, instance.id);
+			return;
+		}
 
+		//create progress ui
+		instance.ui.prog.div = document.createElement('div');
+		instance.ui.prog.div.setAttribute('class', 'status');
+		instance.ui.prog.div.setAttribute('id', instance.id + '_status');
+		
+		//create evt ui
+		instance.ui.evts.div = document.createElement('div');
+		instance.ui.evts.div.setAttribute('class', 'evts');
+		instance.ui.evts.div.setAttribute('id', instance.id + '_evts');
+		
+		//hook it together
+		instance.ui.div.appendChild(instance.ui.prog.div);
+		instance.ui.div.appendChild(instance.ui.evts.div);
+		
 		//Start loading any configured feeds
 		for (i = 0; i < config.feeds.length; i++) {
-			feedId = config.feeds[i];
-			feedUri = "http://www.google.com/calendar/feeds/" +
-				encodeURIComponent(feedId) +
-				"/public/full";
-			feedInstanceId = feedId + "_" + instance.id;
+			feed = instance.feeds[feedUri] = {
+				id: config.feeds[i],
+				uri: "http://www.google.com/calendar/feeds/" +
+					encodeURIComponent(config.feeds[i]) +
+					"/public/full",
+				instanceId = config.feeds[i] + "_" + instance.id;
 			
 			//If we haven't seen this feed before
-			if (!(feedUri in feeds)) { 
+			if (!(feed.uri in feeds)) { 
 				//key a new entry
-				feeds[feedUri] = null;
+				feeds[feed.uri] = null;
 				//indicate another step
 				instance.prog_steps++;
 				//and begin retrieving data
@@ -57,6 +84,24 @@ var upcoming = function () {
 			}
 		}
 	}
+	
+	function format() {
+		var s = arguments[0];
+		for (var i = 0; i < arguments.length - 1; i++) {       
+			var reg = new RegExp("\\{" + i + "\\}", "gm");             
+			s = s.replace(reg, arguments[i + 1]);
+		}
+		return s;
+	}
+	
+	function formatError() {
+		error(format(arguments));
+	}
+	
+	function error(msg)	{
+		//For now, alert
+		alert(msg);
+	}	
 	
 	function makeFeedInstanceCallback(feedUri, instance) {
 		return function(root) {
@@ -122,11 +167,11 @@ var upcoming = function () {
 		}
 				
 		//Clear out the previous message
-		while (instance.div_status.childNodes.length > 0) {
-			instance.div_status.removeChild(instance.div_status.childNodes[0]);
+		while (instance.ui.prog.div.childNodes.length > 0) {
+			instance.ui.prog.div.removeChild(instance.ui.prog.div.childNodes[0]);
 		}
 		if (message !== null) {
-			instance.div_status.appendChild(document.createTextNode(msg));
+			instance.ui.prog.div.appendChild(document.createTextNode(msg));
 		}
 		if (percentage >= 0)
 		{
@@ -136,7 +181,7 @@ var upcoming = function () {
 			divProgress.setAttribute('style', 'width: '+percentage+'px;');
 			divProgress.setAttribute('class', 'progressbar');
 			divBorder.appendChild(divProgress);
-			instance.div_status.appendChild(divBorder);
+			instance.ui.prog.div.appendChild(divBorder);
 		}
 	}
 
