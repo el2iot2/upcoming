@@ -7,65 +7,110 @@ var upcoming = function () {
 		publicCallbacks = {}, //callbacks by feedInstanceId
 		res = upcoming_res || { //load resources, or fallback to EN default
 			default_div_id: "upcoming",
-			err_format_cannot_render: "Upcoming.js cannot render to element '{0}'. Does this id exist?",
+			prog_requesting_feed: "Requesting Feed...",
+			prog_loading_events: "Loading Events...",
+			err_format_cannot_render: "Upcoming.js: Error. Cannot render to element '{0}'. Does this id exist?",
+			err_config_required: "Upcoming.js: Error. Cannot render without configuration.",
+			last: "placeholder"
 		}; 
 
 	//primary entry point
 	function publicRender(config) {
-		var i, instance, feedUri, feedInstanceId, feedId, feed;
-		instance = instances[config.id] = {
+		//require configuration
+		if (config === null) {
+			error(res.err_config_required);
+			return;
+		}
+		
+		//fallback if unspecified
+		config = config || {
+			//Required
+			id: null, //the root div to render our upcoming widget into
+			evts: null, //configuration for the events display ui
+			prog: null //configuration for the status/progress ui
+		};
+		config.evts = config.evts || {};
+		config.prog = config.prog || {};
+		
+		//Build our instance
+		var instance = instances[config.id] = {
 			id: config.id || res.default_div_id,
 			max_results: config.max_results || 15,
-			feeds: {},
+			expectedFeedUris: [],
 			ui: { //Details about html ui for instance
 				div: null, //Root div
-				progress: { //Progress/status ui
+				prog: { //Progress/status ui
 					div: null, //Created div
+					css: config.prog.css || "prog",
+					idSuffix: config.prog.idSuffix || "_prog",
 					steps: 0, //Total number of steps in progress
 					step: 0 //Current step 
 				},
-				evts { //Event display ui
+				evts: { //Event display ui
 					div: null, //Created div
-				},
+					css: config.evts.css || "evts",
+					idSuffix: config.prog.idSuffix || "_evts"
+				}
 			}
 		};
 		
+		//Shortcut vars
+		var ui = instance.ui;
+		var prog = instance.ui.prog;
+		var evts = instance.ui.evts;
+		
 		//Find root instance id
-		instance.ui.div = document.getElementById(instance.id);
-		if (instance.ui.div === null) {
+		ui.div = document.getElementById(instance.id);
+		if (ui.div === null) {
 			formatError(res.err_format_cannot_render, instance.id);
 			return;
 		}
 
 		//create progress ui
-		instance.ui.prog.div = document.createElement('div');
-		instance.ui.prog.div.setAttribute('class', 'status');
-		instance.ui.prog.div.setAttribute('id', instance.id + '_status');
+		prog.div = document.createElement('div');
+		prog.div.setAttribute('class', prog.css);
+		prog.div.setAttribute('id', instance.id + prog.idSuffix);
 		
 		//create evt ui
-		instance.ui.evts.div = document.createElement('div');
-		instance.ui.evts.div.setAttribute('class', 'evts');
-		instance.ui.evts.div.setAttribute('id', instance.id + '_evts');
+		evts.div = document.createElement('div');
+		evts.div.setAttribute('class', evts.css);
+		evts.div.setAttribute('id', instance.id + evts.idSuffix);
 		
 		//hook it together
-		instance.ui.div.appendChild(instance.ui.prog.div);
-		instance.ui.div.appendChild(instance.ui.evts.div);
+		ui.div.appendChild(ui.prog.div);
+		ui.div.appendChild(ui.evts.div);
 		
 		//Start loading any configured feeds
+		var i, feed;
+		
 		for (i = 0; i < config.feeds.length; i++) {
-			feed = instance.feeds[feedUri] = {
+			feed = {
 				id: config.feeds[i],
 				uri: "http://www.google.com/calendar/feeds/" +
 					encodeURIComponent(config.feeds[i]) +
 					"/public/full",
-				instanceId = config.feeds[i] + "_" + instance.id;
+				instanceId: config.feeds[i] + "_" + instance.id};
 			
+			instance.expectedFeedUris[i] = feed.uri;
+			
+			//If we haven't seen this feedInstanceId before
+			if (!(feedInstanceId in publicCallbacks)) { 
+				//Add a new callback that closes over the relevant instance
+				publicCallbacks[feedInstanceId] = makeFeedInstanceCallback(feed.uri, instance);
+			}
+		}
+		
+		//check and make sure that we haven't already received expected feeds
+		foreach(expectedFeedUri in instance.expectedFeedUris)
+		{
 			//If we haven't seen this feed before
 			if (!(feed.uri in feeds)) { 
 				//key a new entry
+				//null indicates the feed is expected, but has not yet arrived
 				feeds[feed.uri] = null;
+				instance.expectedFeedUris[i] = feed.uri;
 				//indicate another step
-				instance.prog_steps++;
+				prog.steps++;
 				//and begin retrieving data
 				document.write("<script type='text/javascript' "+
 					"src='"+ 
@@ -75,16 +120,20 @@ var upcoming = function () {
 					"&orderby=starttime"+
 					"&max-results="+encodeURIComponent(instance.max_results)+
 					"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
-				progress(instance, "Requesting Feed...");
-			}
-			//If we haven't seen this feedInstanceId before
-			if (!(feedInstanceId in publicCallbacks)) { 
-				//Add a new callback that closes over the relevant instance
-				publicCallbacks[feedInstanceId] = makeFeedInstanceCallback(feedUri, instance);
+				//report our progress
+				progress(instance, res.prog_requesting_feed);
 			}
 		}
 	}
 	
+	//return a closure to handle an expected JSONP callback
+	function makeFeedInstanceCallback(feedUri, instance) {
+		return function(root) {
+			callback(root, feedUri, instance);
+		};
+	}
+	
+	//do string formats with a placeholder: format("yada{0} {1} etc.", true, 1)
 	function format() {
 		var s = arguments[0];
 		for (var i = 0; i < arguments.length - 1; i++) {       
@@ -94,39 +143,42 @@ var upcoming = function () {
 		return s;
 	}
 	
+	//do a string format, but then raise a ui error
 	function formatError() {
 		error(format(arguments));
 	}
 	
+	//raise a ui error
 	function error(msg)	{
 		//For now, alert
 		alert(msg);
 	}	
-	
-	function makeFeedInstanceCallback(feedUri, instance) {
-		return function(root) {
-			callback(root, feedUri, instance);
-		};
-	}
 
+	//full callback handler for gcal data
 	function callback(root, feedUri, instance) {
+	
+		//save the returned feed
 		var feed = feeds[feedUri] = {uri: feedUri, data: root.feed};
+		
+		//add an event array if one does not yet exist
 		var evts = instance.evts = instance.evts || [];
-		var iStart = evts.length;
+		var startIndex = evts.length;
+		
 		if (root.feed.entry !== null)
 		{
-			var iCount = root.feed.entry.length;
-			evts[iStart + iCount - 1] = null; //Resize to hold new events
-			for (var i = 0; i < iCount; i++)
+			var entryCount = root.feed.entry.length;
+			var evt = null;
+			evts[startIndex + entryCount - 1] = null; //Resize once to hold new events
+			for (var i = 0; i < entryCount; i++)
 			{
-				var evt = root.feed.entry[i];
-				evt.startDate = gcal_time_as_date(evt.gd$when[0].startTime);
+				evt = root.feed.entry[i];
+				evt.startDate = xsDateTimeToDate(evt.gd$when[0].startTime);
 				if (typeof evt.gd$when[0].endTime == 'undefined') {
 					evt.endDate = null;
 					evt.allDay = true;
 				}
 				else {
-					evt.endDate = gcal_time_as_date(evt.gd$when[0].endTime);
+					evt.endDate = xsDateTimeToDate(evt.gd$when[0].endTime);
 					var startDate = evt.startDate.getDate();
 					var endDate = evt.endDate.getDate();
 					evt.daySpan = endDate - startDate;
@@ -146,21 +198,18 @@ var upcoming = function () {
 						evt.allDay = false;
 				}
 				evt.srcFeed = iFeed;
-				evts[iStart+i] = evt;
+				evts[startIndex+i] = evt;
 			}
 		}
 		
-		feeds_left--;
-		
-		progress(instance, "Loading Events...");
+		progress(instance, res.prog_loading_events);
 		
 		//If we are done loading feeds, process and output our data
 		if (feeds_left < 1)
-			render_evts();
+			renderEvts();
 	}
 
-	function progress(instance, msg)
-	{
+	function progress(instance, msg) {
 		var percentage = -1;
 		if (instance !== null) {
 			percentage = 100.0 * instance.prog_step / instance.prog_step;
@@ -195,7 +244,7 @@ var upcoming = function () {
 	}
 
 	//writes the events from our feeds to the display
-	function render_evts() 
+	function renderEvts(instance) 
 	{
 		//function to sort the events by date
 		function sortEvt(a, b)
@@ -203,63 +252,53 @@ var upcoming = function () {
 			return a.startDate.getTime() - b.startDate.getTime();
 		}
 		
-		var evts = document.getElementById("evts");
-		progress("Sorting Events...", feeds_total, feeds_total+2);
+		var evts = instance.evts;
+		progress(instance, "Sorting Events...");
 		evts.sort(sortEvt);
 		
-		
 		var section = null;
-		var evtCats = build_evt_cats();
+		var evtCats = buildEvtCats();
 		var iCat = 0;
 		var evtCat = evtCats[0]; //first category of event
 		var evt = null;
 		
-		progress("Rendering Events...", feeds_total+1, feeds_total+2);
+		progress(instance, "Rendering Events...");
 		
 		// render each event in the feed
-		for (var i = 0; i < evts.length; i++) 
-		{
+		for (var i = 0; i < evts.length; i++) {
 			evt = evts[i];
 			//Don't stop until we've categorized the event or ran out of categories
-			while(true) 
-			{
+			while(true) {
 				//whether or not the event can be within this category
-				var inCat = evt_in_cat(evt, evtCat); 
-				if (inCat === true)
-				{
+				var inCat = evtInCat(evt, evtCat); 
+				if (inCat === true) {
 					//Display the section if we haven't already
 					if (evtCat.Section === null)
-						build_evt_section(evtCat, evts);
+						renderEvtCat(evtCat, evts);
 					//Render the event in the section
-					render_evt(evt, evtCat);
+					renderEvt(evt, evtCat);
 					break;
 				}
-				else
-				{
+				else {
 					//If we still have another category
-					if (iCat < evtCats.length - 1)
-					{
+					if (iCat < evtCats.length - 1) {
 						evtCat = evtCats[++iCat]; //ratchet the category and re-try the event
 					}
-					else
-					{
+					else {
 						break; //there shouldn't be any events left, but their membership should fail too
 					}
 				}
 			}
 		}
-		if (evts.length > 0)
-		{
+		if (evts.length > 0) {
 			done();
 		}
-		else
-		{
-			status("No Events Found");
+		else {
+			status(instance, "No Events Found");
 		}
-			
 	}
 
-	function evt_in_cat(evt, evtCat)
+	function evtInCat(evt, evtCat)
 	{
 		if (evtCat.Start === null && evtCat.End === null)
 			return true;
@@ -270,8 +309,7 @@ var upcoming = function () {
 		return (!startAfterCatEnd && !endBeforeCatStart);
 	}
 
-	function build_evt_cats()
-	{
+	function buildEvtCats() {
 		var now = new Date();
 		var today = {};
 		var week = {};
@@ -365,8 +403,7 @@ var upcoming = function () {
 		return new Array(today, week, nextWeek, month, nextMonth, year, upcoming);
 	}
 
-	function build_date(year, month, day, isStart)
-	{
+	function build_date(year, month, day, isStart) {
 		var d = new Date(year, month, day);
 		if (isStart === false)
 		{
@@ -421,14 +458,18 @@ var upcoming = function () {
 		return dateString;
 	}
 
-	function is_url(value)
-	{
+	function isUrl(value) {
 		var rx = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 		return rx.test(value);
 	}
+	
+	function isSimpleId(value) {
+		//HTML id is: [A-Za-z][-A-Za-z0-9_:.]*, but we allow a subset:
+		var rx = /[A-Za-z][-A-Za-z0-9_:.]*/;
+		return rx.test(value);
+	}
 
-	function render_evt(evt, evtCat)
-	{
+	function renderEvt(evt, evtCat) {
 		var title, where, whereUrl, description, start, spanTitle, createdBy, eventUrl, when, divEvt, link, toggle, titleUrl, entryLinkHref, linki, divDetail;
 		
 		//Title field
@@ -481,7 +522,7 @@ var upcoming = function () {
 		toggle = document.createElement('span');
 		toggle.setAttribute('id', 'evt_tgl_'+evt);
 		toggle.setAttribute('class', 'toggle');
-		toggle.onclick = function() { toggle_evt_detail(evt); };
+		toggle.onclick = function() { toggleEvtDetail(evt); };
 		toggle.appendChild(document.createTextNode('+'));
 		divEvt.appendChild(toggle);
 		
@@ -514,7 +555,7 @@ var upcoming = function () {
 		evtCat.Section.appendChild(divEvt);
 	}
 
-	function toggle_evt_detail(evt_no)
+	function toggleEvtDetail(evt_no)
 	{
 		var evtDiv, evtLink;
 		evtDiv = document.getElementById("evt_div_" + evt_no);
@@ -531,7 +572,7 @@ var upcoming = function () {
 		}
 	}
 
-	function build_evt_section(evtCat, evts)
+	function renderEvtCat(evtCat, evts)
 	{
 		var divSect, divSectHeader, divSectRange, divDetail;
 		divSect = document.createElement('div');
@@ -554,7 +595,7 @@ var upcoming = function () {
 	//and outputs a human-readable form of this date or date/time.
 	//@param {string} gCalTime is the xs:date or xs:dateTime formatted string
 	//@return {string} is the human-readable date or date/time string
-	function gcal_time_as_date(gCalTime) { 
+	function xsDateTimeToDate(gCalTime) { 
 		// text for regex matches
 		var remtxt = gCalTime;
 
