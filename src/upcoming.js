@@ -1,11 +1,15 @@
 var upcoming = function () {
 	"use strict";
-	//All managed calendar instances
-	var instances = {}, feeds = {}, feedInstances = {};
+	
+	var 
+		instances = {}, //instances by div id
+		feeds = {},  //feeds by uri
+		publicCallbacks = {}; //callbacks by feedInstanceId
+		
 
 	//primary entry point
 	function publicRender(config) {
-		var i, instance, id, signature;
+		var i, instance, feedUri, feedInstanceId, feedId, feed;
 		instance = instances[config.id] = {
 			id: config.id || "upcoming-div",
 			max_results: config.max_results || 15
@@ -19,73 +23,75 @@ var upcoming = function () {
 		instance.div_evts.setAttribute('id', instance.id + '_evts');
 		instance.div_root.appendChild(instance.div_status);
 		instance.div_root.appendChild(instance.div_evts);
-		instance.loadingFeedCount = instance.loadedFeedCount = 0;
+		instance.prog_steps = instance.prog_step = 0;
 
+		//Start loading any configured feeds
 		for (i = 0; i < config.feeds.length; i++) {
-			id = "http://www.google.com/calendar/feeds/" +
-				encodeURIComponent(config.feeds[i]) +
+			feedId = config.feeds[i];
+			feedUri = "http://www.google.com/calendar/feeds/" +
+				encodeURIComponent(feedId) +
 				"/public/full";
-			signature = id + "_" + instance.max_results;
-			if (!(id in feeds))
-			{
-				//create a feed entry
-				var newFeed = feeds[id] = {
-					instances: {}
-				};
-				instance.loadingFeedCount++;
-				//and indicate an association with the instance
-				newFeed.instances[instance.id]=instance;
+			feedInstanceId = feedId + "_" + instance.id;
+			
+			//If we haven't seen this feed before
+			if (!(feedUri in feeds)) { 
+				//key a new entry
+				feeds[feedUri] = null;
+				//indicate another step
+				instance.prog_steps++;
 				//and begin retrieving data
 				document.write("<script type='text/javascript' "+
 					"src='"+ 
-					id + 
-					"?alt=json-in-script&callback=upcoming.callback"+
+					feedUri + //already encoded
+					"?alt=json-in-script&callback=upcoming.callbacks."+
+					encodeURIComponent(feedInstanceId)+
 					"&orderby=starttime"+
-					"&max-results="+instance.max_results+
+					"&max-results="+encodeURIComponent(instance.max_results)+
 					"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
+				progress(instance, "Requesting Feed...");
 			}
-			else
-			{
-				//indicate an association with the instance
-				feeds[id].instances[instance.id]=instance;
-				instance.loadedFeedCount++;
+			//If we haven't seen this feedInstanceId before
+			if (!(feedInstanceId in publicCallbacks)) { 
+				//Add a new callback that closes over the relevant instance
+				publicCallbacks[feedInstanceId] = makeFeedInstanceCallback(feedUri, instance);
 			}
-			progress(instance, "Loading Events...")
 		}
 	}
+	
+	function makeFeedInstanceCallback(feedUri, instance) {
+		return function(root) {
+			callback(root, feedUri, instance);
+		};
+	}
 
-	function publicCallback(root) {
-		var iFeed = this.feeds.length;
-		feeds[root.feed.title.$t] = root.feed;
-		var iStart = this.evts.length;
-		if (root.feed.entry != null)
+	function callback(root, feedUri, instance) {
+		var feed = feeds[feedUri] = {uri: feedUri, data: root.feed};
+		var evts = instance.evts = instance.evts || [];
+		var iStart = evts.length;
+		if (root.feed.entry !== null)
 		{
 			var iCount = root.feed.entry.length;
 			evts[iStart + iCount - 1] = null; //Resize to hold new events
 			for (var i = 0; i < iCount; i++)
 			{
 				var evt = root.feed.entry[i];
-				evt.startDate = this.gcal_time_as_date(evt['gd$when'][0].startTime);
-				if (typeof evt['gd$when'][0].endTime == 'undefined')
-				{
+				evt.startDate = gcal_time_as_date(evt.gd$when[0].startTime);
+				if (typeof evt.gd$when[0].endTime == 'undefined') {
 					evt.endDate = null;
 					evt.allDay = true;
 				}
-				else
-				{
-					evt.endDate = this.gcal_time_as_date(evt['gd$when'][0].endTime);
+				else {
+					evt.endDate = gcal_time_as_date(evt.gd$when[0].endTime);
 					var startDate = evt.startDate.getDate();
 					var endDate = evt.endDate.getDate();
 					evt.daySpan = endDate - startDate;
-					if (evt.daySpan < 1)
-					{
+					if (evt.daySpan < 1) {
 						evt.allDay = false;
 					}
-					else if (evt.daySpan == 1)
-					{
+					else if (evt.daySpan == 1) {
 						var startHours = evt.startDate.getHours();
 						var endHours = evt.endDate.getHours();
-						if ((startHours == endHours) && (startHours + endHours == 0))
+						if ((startHours == endHours) && (startHours + endHours === 0))
 						{
 							evt.allDay = true;
 							evt.daySpan = 1;
@@ -95,33 +101,33 @@ var upcoming = function () {
 						evt.allDay = false;
 				}
 				evt.srcFeed = iFeed;
-				this.evts[iStart+i] = evt;
+				evts[iStart+i] = evt;
 			}
 		}
 		
 		feeds_left--;
 		
-		progress("Loading Events...", feeds_total-feeds_left, feeds_total+2);
+		progress(instance, "Loading Events...");
 		
 		//If we are done loading feeds, process and output our data
 		if (feeds_left < 1)
 			render_evts();
 	}
 
-	
-
-	function progress(msg, loc, total)
+	function progress(instance, msg)
 	{
-		var percentage = 100.0*loc/total;
-		if (div.status == null)
-			div.status = document.getElementById("status");
-		
-		//Clear out the previous message
-		while (div.status.childNodes.length > 0)
-		{
-			div.status.removeChild(div.status.childNodes[0]);
+		var percentage = -1;
+		if (instance !== null) {
+			percentage = 100.0 * instance.prog_step / instance.prog_step;
 		}
-		div.status.appendChild(document.createTextNode(msg));
+				
+		//Clear out the previous message
+		while (instance.div_status.childNodes.length > 0) {
+			instance.div_status.removeChild(instance.div_status.childNodes[0]);
+		}
+		if (message !== null) {
+			instance.div_status.appendChild(document.createTextNode(msg));
+		}
 		if (percentage >= 0)
 		{
 			var divBorder = document.createElement('div');
@@ -130,25 +136,17 @@ var upcoming = function () {
 			divProgress.setAttribute('style', 'width: '+percentage+'px;');
 			divProgress.setAttribute('class', 'progressbar');
 			divBorder.appendChild(divProgress);
-			div.status.appendChild(divBorder);
+			instance.div_status.appendChild(divBorder);
 		}
 	}
 
-	function status(msg)
-	{
-		progress(msg, -1, 1);
+	function status(msg) {
+		progress(null, msg);
 	}
 
-	function done()
+	function done(instance)
 	{
-		if (div.status == null)
-			div.status = document.getElementById("status");
-		
-		//Clear out the previous message
-		while (div.status.childNodes.length > 0)
-		{
-			div.status.removeChild(div.status.childNodes[0]);
-		}
+		progress(null, null);
 	}
 
 	//writes the events from our feeds to the display
@@ -159,9 +157,8 @@ var upcoming = function () {
 		{
 			return a.startDate.getTime() - b.startDate.getTime();
 		}
-
+		
 		var evts = document.getElementById("evts");
-	  
 		progress("Sorting Events...", feeds_total, feeds_total+2);
 		evts.sort(sortEvt);
 		
@@ -183,10 +180,10 @@ var upcoming = function () {
 			{
 				//whether or not the event can be within this category
 				var inCat = evt_in_cat(evt, evtCat); 
-				if (inCat == true)
+				if (inCat === true)
 				{
 					//Display the section if we haven't already
-					if (evtCat.Section == null)
+					if (evtCat.Section === null)
 						build_evt_section(evtCat, evts);
 					//Render the event in the section
 					render_evt(evt, evtCat);
@@ -217,9 +214,9 @@ var upcoming = function () {
 			
 	}
 
-	evt_in_cat = function(evt, evtCat)
+	function evt_in_cat(evt, evtCat)
 	{
-		if (evtCat.Start == null && evtCat.End == null)
+		if (evtCat.Start === null && evtCat.End === null)
 			return true;
 		var evtStart = evt.startDate.getTime();
 		var evtEnd = evt.endDate.getTime();
@@ -228,16 +225,16 @@ var upcoming = function () {
 		return (!startAfterCatEnd && !endBeforeCatStart);
 	}
 
-	build_evt_cats = function()
+	function build_evt_cats()
 	{
 		var now = new Date();
-		var today = new Object();
-		var week = new Object();
-		var nextWeek = new Object();
-		var month = new Object();
-		var nextMonth = new Object();
-		var year = new Object();
-		var upcoming = new Object();
+		var today = {};
+		var week = {};
+		var nextWeek = {};
+		var month = {};
+		var nextMonth = {};
+		var year = {};
+		var upcoming = {};
 		
 		var nowMonth = now.getMonth();
 		var nowFullYear = now.getFullYear();
@@ -326,7 +323,7 @@ var upcoming = function () {
 	function build_date(year, month, day, isStart)
 	{
 		var d = new Date(year, month, day);
-		if (isStart == false)
+		if (isStart === false)
 		{
 			d.setHours(23);
 			d.setMinutes(59);
@@ -354,7 +351,7 @@ var upcoming = function () {
 		{
 			dateString = evt.startDate.print(evtCat.DateFormat)+" - "+evt.endDate.print(evtCat.MultiDateFormat);
 		}
-		else if (evt.daySpan == 0)
+		else if (evt.daySpan === 0)
 		{
 			dateString = evt.startDate.print(evtCat.DateFormat)+ " ";
 			var startHours = evt.startDate.print('%i');
@@ -366,12 +363,12 @@ var upcoming = function () {
 			if (startAmPm == endAmPm)
 				startAmPm = '';
 			if (startMins == "00")
-				startMins = ""
+				startMins = "";
 			else
 				startMins = ":"+startMins;
 				
 			if (endMins == "00")
-				endMins = ""
+				endMins = "";
 			else
 				endMins = ":"+endMins;
 			dateString = dateString + startHours + startMins + startAmPm + "-" + endHours + endMins + endAmPm;
@@ -379,9 +376,9 @@ var upcoming = function () {
 		return dateString;
 	}
 
-	is_url = function(value)
+	function is_url(value)
 	{
-		var rx = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+		var rx = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 		return rx.test(value);
 	}
 
@@ -391,7 +388,7 @@ var upcoming = function () {
 		
 		//Title field
 		title = null;
-		if (typeof evt.title.$t != undefined)
+		if (typeof evt.title.$t !== undefined)
 			title = evt.title.$t;
 		
 		//Where Field
@@ -411,20 +408,21 @@ var upcoming = function () {
 		if (typeof evt.content.$t != 'undefined')
 			description = evt.content.$t;
 		
-		start = evt['gd$when'][0].startTime;
+		start = evt.gd$when[0].startTime;
 		
 		//Created By field
 		createdBy = null;
 		if (typeof evt.author[0].name != 'undefined')
-		  createdBy = evt.author[0].name.$t;
-	  
+		{
+			createdBy = evt.author[0].name.$t;
+		}
 		//Event URL field
 		eventUrl = null;
-		for (linki = 0; linki < evt['link'].length; linki++) 
+		for (linki = 0; linki < evt.link.length; linki++) 
 		{
-			if (evt['link'][linki]['type'] == 'text/html' && evt['link'][linki]['rel'] == 'alternate') 
+			if (evt.link[linki].type == 'text/html' && evt.link[linki].type == 'alternate') 
 			{
-				eventUrl = evt['link'][linki]['href'];
+				eventUrl = evt.link[linki].href;
 			}
 		}
 
@@ -438,7 +436,7 @@ var upcoming = function () {
 		toggle = document.createElement('span');
 		toggle.setAttribute('id', 'evt_tgl_'+evt);
 		toggle.setAttribute('class', 'toggle');
-		toggle.setAttribute('onclick', "javascript:Gcv.toggle_evt_detail("+String(evt)+")");
+		toggle.onclick = function() { toggle_evt_detail(evt); };
 		toggle.appendChild(document.createTextNode('+'));
 		divEvt.appendChild(toggle);
 		
@@ -448,30 +446,30 @@ var upcoming = function () {
 		spanTitle.setAttribute('class', 'title');
 		
 		//Figure out our title URL
-		titleUrl = (whereUrl != null ? whereUrl : eventUrl);
+		titleUrl = (whereUrl !== null ? whereUrl : eventUrl);
 		
 		//either title or title link
-		spanTitle.innerHTML = (titleUrl == null ? title : "<a href='"+ encodeURI(titleUrl)+"'>"+title+"</a>");
+		spanTitle.innerHTML = (titleUrl === null ? title : "<a href='"+ encodeURI(titleUrl)+"'>"+title+"</a>");
 		divEvt.appendChild(spanTitle);
 		
 		divDetail = document.createElement('div');
 		divDetail.setAttribute('id', 'evt_div_'+evt);
 		divDetail.setAttribute('class', 'evt_detail');
 		evt++;
-		divDetail.innerHTML = 	(when != null ? 
+		divDetail.innerHTML = (when !== null ? 
 									"When: ".bold() + when + "<br/>" : "")+
-								(where != null && whereUrl == null ? 
+								(where !== null && whereUrl=== null ? 
 									"Where: ".bold() + "<a href='http://maps.google.com/maps?hl=en&q="+encodeURI(where)+"'>"+where+"</a><br/>" : "")+
-								(createdBy != null ? 
+								(createdBy !== null ? 
 									"Created by: ".bold() + createdBy + "<br/>" : "")+
-								(description != null ? 
+								(description !== null ? 
 									"Description: ".bold() + "<div class='description'>"+description+"</div>" : "");
 		divDetail.style.display = 'none';
 		divEvt.appendChild(divDetail);
 		evtCat.Section.appendChild(divEvt);
 	}
 
-	toggle_evt_detail = function(evt_no)
+	function toggle_evt_detail(evt_no)
 	{
 		var evtDiv, evtLink;
 		evtDiv = document.getElementById("evt_div_" + evt_no);
@@ -488,7 +486,7 @@ var upcoming = function () {
 		}
 	}
 
-	build_evt_section = function(evtCat, evts)
+	function build_evt_section(evtCat, evts)
 	{
 		var divSect, divSectHeader, divSectRange, divDetail;
 		divSect = document.createElement('div');
@@ -507,18 +505,11 @@ var upcoming = function () {
 		evtCat.Section = divDetail;
 	}
 
-	//
-	// GOOGLE HELPER FUNCTIONS
-	//
-
-	/**
-	 * Converts an xs:date or xs:dateTime formatted string into the local timezone
-	 * and outputs a human-readable form of this date or date/time.
-	 *
-	 * @param {string} gCalTime is the xs:date or xs:dateTime formatted string
-	 * @return {string} is the human-readable date or date/time string
-	 */
-	gcal_time_as_date = function(gCalTime) { 
+	//Converts an xs:date or xs:dateTime formatted string into the local timezone
+	//and outputs a human-readable form of this date or date/time.
+	//@param {string} gCalTime is the xs:date or xs:dateTime formatted string
+	//@return {string} is the human-readable date or date/time string
+	function gcal_time_as_date(gCalTime) { 
 		// text for regex matches
 		var remtxt = gCalTime;
 
@@ -556,12 +547,12 @@ var upcoming = function () {
 			if (zuluOrNot != 'Z') 
 			{
 				var corrPlusMinus = consume('[\\+\\-]');
-				if (corrPlusMinus != '') 
+				if (corrPlusMinus !== '') 
 				{
 					var corrHours = consume('\\d{2}');
 					consume(':?');
 					var corrMins = consume('\\d{2}');
-					totalCorrMins = (corrPlusMinus=='-' ? 1 : -1) * (Number(corrHours) * 60 + (corrMins=='' ? 0 : Number(corrMins)));
+					totalCorrMins = (corrPlusMinus === '-' ? 1 : -1) * (Number(corrHours) * 60 + (corrMins ==='' ? 0 : Number(corrMins)));
 				}
 			} 
 		}
@@ -575,6 +566,6 @@ var upcoming = function () {
 	}
 	return {
 		render: publicRender,
-		callback: publicCallback
-	}
-}
+		callbacks: publicCallbacks
+	};
+};
