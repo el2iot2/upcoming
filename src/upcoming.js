@@ -54,7 +54,7 @@ var upcoming = function () {
 		}
 		
 		if (!isSimpleId(config.id)) {
-			errorFormat(res.err_format_config_id_invalid, config.id);
+			formatError(res.err_format_config_id_invalid, config.id);
 			return;
 		}
 		
