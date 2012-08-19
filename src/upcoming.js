@@ -1,19 +1,50 @@
 var upcoming = function () {
 	"use strict";
 	
-	var 
-		instances = {}, //instances by div id
-		feeds = {},  //feeds by uri
-		publicCallbacks = {}, //callbacks by feedInstanceId
-		res = upcoming_res || { //load resources, or fallback to EN default
+	var res;
+	if (typeof upcoming_res != 'undefined') {
+		res = upcoming_res;
+	}
+	else {
+		res = { //load resources, or fallback to EN default
 			default_div_id: "upcoming",
 			prog_requesting_feed: "Requesting Feed...",
 			prog_loading_events: "Loading Events...",
 			err_format_cannot_render: "Upcoming.js: Error. Cannot render to element '{0}'. Does this id exist?",
+			err_format_config_id_invalid: "Upcoming.js: Error. Cannot render to element '{0}'. id not supported.",
 			err_config_required: "Upcoming.js: Error. Cannot render without configuration.",
+			date_format: "",
+			time_format: "",
 			last: "placeholder"
-		}; 
+		};
+	}		
 
+	var 
+		instances = {}, //instances by div id
+		feeds = {},  //feeds by uri
+		publicCallbacks = {}; //callbacks by feedInstanceId
+
+	//do string formats with a placeholder: format("yada{0} {1} etc.", true, 1)
+	function format() {
+		var s = arguments[0];
+		for (var i = 0; i < arguments.length - 1; i++) {       
+			var reg = new RegExp("\\{" + i + "\\}", "gm");             
+			s = s.replace(reg, arguments[i + 1]);
+		}
+		return s;
+	}
+	
+	//do a string format, but then raise a ui error
+	function formatError() {
+		error(format(arguments));
+	}
+	
+	//raise a ui error
+	function error(msg)	{
+		//For now, alert
+		alert(msg);
+	}	
+		
 	//primary entry point
 	function publicRender(config) {
 		//require configuration
@@ -21,6 +52,12 @@ var upcoming = function () {
 			error(res.err_config_required);
 			return;
 		}
+		
+		if (!isSimpleId(config.id)) {
+			errorFormat(res.err_format_config_id_invalid, config.id);
+			return;
+		}
+		
 		
 		//fallback if unspecified
 		config = config || {
@@ -36,7 +73,7 @@ var upcoming = function () {
 		var instance = instances[config.id] = {
 			id: config.id || res.default_div_id,
 			max_results: config.max_results || 15,
-			expectedFeedUris: [],
+			expectedFeeds: [],
 			ui: { //Details about html ui for instance
 				div: null, //Root div
 				prog: { //Progress/status ui
@@ -51,7 +88,8 @@ var upcoming = function () {
 					css: config.evts.css || "evts",
 					idSuffix: config.prog.idSuffix || "_evts"
 				}
-			}
+			},
+			evts: [] //The listing of evt data
 		};
 		
 		//Shortcut vars
@@ -80,133 +118,132 @@ var upcoming = function () {
 		ui.div.appendChild(ui.prog.div);
 		ui.div.appendChild(ui.evts.div);
 		
-		//Start loading any configured feeds
-		var i, feed;
-		
+		//process configured feeds
+		var i, feedInfo, feed;
 		for (i = 0; i < config.feeds.length; i++) {
-			feed = {
-				id: config.feeds[i],
+			feedInfo = {
+				id: config.feeds[i] + "_" + instance.id,
+				feed: config.feeds[i],
+				instance: instance.id,
 				uri: "http://www.google.com/calendar/feeds/" +
 					encodeURIComponent(config.feeds[i]) +
-					"/public/full",
-				instanceId: config.feeds[i] + "_" + instance.id};
+					"/public/full"};
 			
-			instance.expectedFeedUris[i] = feed.uri;
-			
-			//If we haven't seen this feedInstanceId before
-			if (!(feedInstanceId in publicCallbacks)) { 
-				//Add a new callback that closes over the relevant instance
-				publicCallbacks[feedInstanceId] = makeFeedInstanceCallback(feed.uri, instance);
-			}
-		}
+			instance.expectedFeeds[feedInfo.uri] = feedInfo;
 		
-		//check and make sure that we haven't already received expected feeds
-		foreach(expectedFeedUri in instance.expectedFeedUris)
-		{
+			//indicate another step
+			prog.steps++;
+		
 			//If we haven't seen this feed before
-			if (!(feed.uri in feeds)) { 
+			if (!(feedInfo.uri in feeds)) { 
 				//key a new entry
-				//null indicates the feed is expected, but has not yet arrived
-				feeds[feed.uri] = null;
-				instance.expectedFeedUris[i] = feed.uri;
-				//indicate another step
-				prog.steps++;
+				//indicates the feed is expected, and what instance expects it
+				feed = feeds[feedInfo.uri] = {
+					data: null,
+					expectedInstances:{},
+					callback: "feed"+feeds.length
+				};
+				//Add a new callback that closes over the relevant instance
+				publicCallbacks[feed.callback] = makeFeedInstanceCallback(feedInfo.uri);
+				feed.expectedInstances[instance.id] = feedInfo;
+				
 				//and begin retrieving data
 				document.write("<script type='text/javascript' "+
 					"src='"+ 
-					feedUri + //already encoded
+					feedInfo.uri + //already encoded
 					"?alt=json-in-script&callback=upcoming.callbacks."+
-					encodeURIComponent(feedInstanceId)+
+					encodeURIComponent(feed.callback)+
 					"&orderby=starttime"+
 					"&max-results="+encodeURIComponent(instance.max_results)+
 					"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
 				//report our progress
 				progress(instance, res.prog_requesting_feed);
 			}
+			else {
+				//A key exists, so retrieve it
+				feed = feeds[feedInfo.uri];
+				feed.expectedInstances[instance.id] = feedInfo; //indicate this instance expects the feed too
+				
+				if (feed.data !== null) { //if we have this feed already
+					//simulate a direct callback based on the existing data
+					callback(null, feedInfo.uri);
+				} 
+			}
 		}
 	}
 	
 	//return a closure to handle an expected JSONP callback
-	function makeFeedInstanceCallback(feedUri, instance) {
+	function makeFeedInstanceCallback(feedUri) {
 		return function(root) {
-			callback(root, feedUri, instance);
+			callback(root, feedUri);
 		};
 	}
-	
-	//do string formats with a placeholder: format("yada{0} {1} etc.", true, 1)
-	function format() {
-		var s = arguments[0];
-		for (var i = 0; i < arguments.length - 1; i++) {       
-			var reg = new RegExp("\\{" + i + "\\}", "gm");             
-			s = s.replace(reg, arguments[i + 1]);
-		}
-		return s;
-	}
-	
-	//do a string format, but then raise a ui error
-	function formatError() {
-		error(format(arguments));
-	}
-	
-	//raise a ui error
-	function error(msg)	{
-		//For now, alert
-		alert(msg);
-	}	
 
 	//full callback handler for gcal data
-	function callback(root, feedUri, instance) {
-	
-		//save the returned feed
-		var feed = feeds[feedUri] = {uri: feedUri, data: root.feed};
+	function callback(root, feedUri) {
+		var feed = feeds[feedUri];
 		
-		//add an event array if one does not yet exist
-		var evts = instance.evts = instance.evts || [];
-		var startIndex = evts.length;
+		//capture data if we have not yet done so
+		feed.data = feed.data || root.feed;
+		var evts, startIndex, entryCount, instance, feedInfo, evt, i, instanceId;
 		
-		if (root.feed.entry !== null)
-		{
-			var entryCount = root.feed.entry.length;
-			var evt = null;
-			evts[startIndex + entryCount - 1] = null; //Resize once to hold new events
-			for (var i = 0; i < entryCount; i++)
+		for (instanceId in feed.expectedInstances) {
+			feedInfo = feed.expectedInstances[instanceId];
+			instance = instances[feedInfo.instance];
+			
+			//add an event array if one does not yet exist
+			evts = instance.evts;
+			startIndex = evts.length;
+			
+			if (root.feed.entry !== null)
 			{
-				evt = root.feed.entry[i];
-				evt.startDate = xsDateTimeToDate(evt.gd$when[0].startTime);
-				if (typeof evt.gd$when[0].endTime == 'undefined') {
-					evt.endDate = null;
-					evt.allDay = true;
-				}
-				else {
-					evt.endDate = xsDateTimeToDate(evt.gd$when[0].endTime);
-					var startDate = evt.startDate.getDate();
-					var endDate = evt.endDate.getDate();
-					evt.daySpan = endDate - startDate;
-					if (evt.daySpan < 1) {
-						evt.allDay = false;
+				entryCount = root.feed.entry.length;
+				evts[startIndex + entryCount - 1] = null; //Resize once to hold new events
+				for (i = 0; i < entryCount; i++)
+				{
+					evt = root.feed.entry[i];
+					evt.startDate = xsDateTimeToDate(evt.gd$when[0].startTime);
+					if (typeof evt.gd$when[0].endTime == 'undefined') {
+						evt.endDate = null;
+						evt.allDay = true;
 					}
-					else if (evt.daySpan == 1) {
-						var startHours = evt.startDate.getHours();
-						var endHours = evt.endDate.getHours();
-						if ((startHours == endHours) && (startHours + endHours === 0))
-						{
-							evt.allDay = true;
-							evt.daySpan = 1;
+					else {
+						evt.endDate = xsDateTimeToDate(evt.gd$when[0].endTime);
+						var startDate = evt.startDate.getDate();
+						var endDate = evt.endDate.getDate();
+						evt.daySpan = endDate - startDate;
+						if (evt.daySpan < 1) {
+							evt.allDay = false;
 						}
+						else if (evt.daySpan == 1) {
+							var startHours = evt.startDate.getHours();
+							var endHours = evt.endDate.getHours();
+							if ((startHours == endHours) && (startHours + endHours === 0))
+							{
+								evt.allDay = true;
+								evt.daySpan = 1;
+							}
+						}
+						else
+							evt.allDay = false;
 					}
-					else
-						evt.allDay = false;
+					evts[startIndex+i] = evt;
 				}
-				evt.srcFeed = iFeed;
-				evts[startIndex+i] = evt;
 			}
+			
+			progress(instance, res.prog_loading_events);
+			
+			//remove this expected feed
+			delete instance.expectedFeeds[feedInfo.uri];
+			
+			//see if anything else remains
+			for(var prop in instance.expectedFeeds) {
+				if (instance.expectedFeeds.hasOwnProperty(prop)) {
+					continue; //wait for later callback to render
+				}
+			}
+			renderEvts(instance);
 		}
-		
-		progress(instance, res.prog_loading_events);
-		
-		//If we are done loading feeds, process and output our data
-		if (feeds_left < 1)
-			renderEvts();
 	}
 
 	function progress(instance, msg) {
@@ -219,7 +256,7 @@ var upcoming = function () {
 		while (instance.ui.prog.div.childNodes.length > 0) {
 			instance.ui.prog.div.removeChild(instance.ui.prog.div.childNodes[0]);
 		}
-		if (message !== null) {
+		if (msg !== null) {
 			instance.ui.prog.div.appendChild(document.createTextNode(msg));
 		}
 		if (percentage >= 0)
@@ -256,7 +293,6 @@ var upcoming = function () {
 		progress(instance, "Sorting Events...");
 		evts.sort(sortEvt);
 		
-		var section = null;
 		var evtCats = buildEvtCats();
 		var iCat = 0;
 		var evtCat = evtCats[0]; //first category of event
@@ -327,18 +363,18 @@ var upcoming = function () {
 		today.Start = build_date(nowFullYear, nowMonth, nowDate, true);
 		today.End = build_date(nowFullYear, nowMonth, nowDate, false);
 		today.Section = null;
-		today.DateFormat = time_format;
-		today.TimeFormat = time_format;
-		today.MultiDateFormat = date_format;
+		today.DateFormat = res.time_format;
+		today.TimeFormat = res.time_format;
+		today.MultiDateFormat = res.date_format;
 		today.Caption = "Today";
-		today.Range = today.Start.print(date_format);
+		today.Range = today.Start.print(res.date_format);
 		
 		week.Start = build_date(nowFullYear, nowMonth, nowDate - nowDay, true);
 		week.End = build_date(nowFullYear, nowMonth, nowDate + 6 - nowDay, false);
 		week.Section = null;
-		week.DateFormat = date_format;
-		week.TimeFormat = time_format;
-		week.MultiDateFormat = date_format;
+		week.DateFormat = res.date_format;
+		week.TimeFormat = res.time_format;
+		week.MultiDateFormat = res.date_format;
 		week.Caption = "This Week";
 		week.StartMonth = week.Start.print('%b');
 		week.EndMonth = week.End.print('%b');
@@ -351,9 +387,9 @@ var upcoming = function () {
 		nextWeek.Start = build_date(nowFullYear, nowMonth, nowDate - nowDay + 7, true);
 		nextWeek.End = build_date(nowFullYear, nowMonth, nowDate + 13 - nowDay, false);
 		nextWeek.Section = null;
-		nextWeek.DateFormat = date_format;
-		nextWeek.TimeFormat = time_format;
-		nextWeek.MultiDateFormat = date_format;
+		nextWeek.DateFormat = res.date_format;
+		nextWeek.TimeFormat = res.time_format;
+		nextWeek.MultiDateFormat = res.date_format;
 		nextWeek.Caption = "Next Week";
 		nextWeek.StartMonth = nextWeek.Start.print('%b');
 		nextWeek.EndMonth = nextWeek.End.print('%b');
@@ -366,37 +402,37 @@ var upcoming = function () {
 		month.Start = build_date(nowFullYear, nowMonth, 0, true);
 		month.End = build_date(nowFullYear, nowMonth+1, -1, false);
 		month.Section = null;
-		month.DateFormat = date_format;
-		month.TimeFormat = time_format;
-		month.MultiDateFormat = date_format;
+		month.DateFormat = res.date_format;
+		month.TimeFormat = res.time_format;
+		month.MultiDateFormat = res.date_format;
 		month.Caption = "This Month";
 		month.Range = month.Start.print('%b %Y');
 		
 		nextMonth.Start = build_date(nowFullYear, nowMonth+1, 1, true);
 		nextMonth.End = build_date(nowFullYear, nowMonth+2, -1, false);
 		nextMonth.Section = null;
-		nextMonth.DateFormat = date_format;
-		nextMonth.TimeFormat = time_format;
-		nextMonth.MultiDateFormat = date_format;
+		nextMonth.DateFormat = res.date_format;
+		nextMonth.TimeFormat = res.time_format;
+		nextMonth.MultiDateFormat = res.date_format;
 		nextMonth.Caption = "Next Month";
 		nextMonth.Range = nextMonth.Start.print('%b %Y');
 		
 		year.Start = build_date(nowFullYear, 0, 1, true);
 		year.End = build_date(nowFullYear+1, 0, -1, false);
 		year.Section = null;
-		year.DateFormat = date_format;
-		year.TimeFormat = time_format;
-		year.MultiDateFormat = date_format;
+		year.DateFormat = res.date_format;
+		year.TimeFormat = res.time_format;
+		year.MultiDateFormat = res.date_format;
 		year.Caption = "This Year";
 		year.Range = today.Start.print('%Y');
 		
 		upcoming.Start = null;
 		upcoming.End = null;
 		upcoming.Section = null;
-		upcoming.DateFormat = date_format;
+		upcoming.DateFormat = res.date_format;
 		upcoming.DateFormat = '%I:%M%p';
 		upcoming.TimeFormat = '%I:%M%p';
-		upcoming.MultiDateFormat = date_format;
+		upcoming.MultiDateFormat = res.date_format;
 		upcoming.Caption = "Upcoming";
 		upcoming.Range = "";
 		
@@ -465,12 +501,12 @@ var upcoming = function () {
 	
 	function isSimpleId(value) {
 		//HTML id is: [A-Za-z][-A-Za-z0-9_:.]*, but we allow a subset:
-		var rx = /[A-Za-z][-A-Za-z0-9_:.]*/;
+		var rx = /[A-Za-z][A-Za-z0-9_:.]*/;
 		return rx.test(value);
 	}
 
 	function renderEvt(evt, evtCat) {
-		var title, where, whereUrl, description, start, spanTitle, createdBy, eventUrl, when, divEvt, link, toggle, titleUrl, entryLinkHref, linki, divDetail;
+		var title, where, whereUrl, description, start, spanTitle, createdBy, eventUrl, when, divEvt, toggle, titleUrl, linki, divDetail;
 		
 		//Title field
 		title = null;
@@ -483,7 +519,7 @@ var upcoming = function () {
 		if (typeof evt.gd$where[0].valueString != 'undefined')
 		{
 			where = evt.gd$where[0].valueString;
-			if (is_url(evt.gd$where[0].valueString))
+			if (isUrl(evt.gd$where[0].valueString))
 			{
 				whereUrl = where;
 			}
@@ -654,4 +690,4 @@ var upcoming = function () {
 		render: publicRender,
 		callbacks: publicCallbacks
 	};
-};
+}();
