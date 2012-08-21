@@ -1,23 +1,31 @@
 var upcoming = function () {
 	"use strict";
 	
-	var res;
-	if (typeof upcoming_res != 'undefined') {
-		res = upcoming_res;
-	}
-	else {
-		res = { //load resources, or fallback to EN default
-			default_div_id: "upcoming",
-			prog_requesting_feed: "Requesting Feed...",
-			prog_loading_events: "Loading Events...",
-			err_format_cannot_render: "Upcoming.js: Error. Cannot render to element '{0}'. Does this id exist?",
-			err_format_config_id_invalid: "Upcoming.js: Error. Cannot render to element '{0}'. id not supported.",
-			err_config_required: "Upcoming.js: Error. Cannot render without configuration.",
-			date_format: "",
-			time_format: "",
-			last: "placeholder"
-		};
-	}		
+	var languages = {};
+	
+	var res = { //load resources, or fallback EN default
+		default_div_id: "upcoming",
+		prog_requesting_feed: "Requesting Feed...",
+		prog_loading_events: "Loading Events...",
+		prog_sorting_events: "Sorting Events...",
+		prog_rendering_events: "Rendering Events...",
+		prog_no_events_found: "No Events Found.",
+		event_cat_today: "Today",
+		event_cat_this_week: "This Week",
+		event_cat_next_week: "Next Week",
+		event_cat_this_month: "This Month",
+		event_cat_next_month: "Next Month",
+		event_cat_this_year: "This Year",
+		event_cat_upcoming: "Upcoming",
+		time_format: "LT",
+		date_format: "LL",
+		err_format_cannot_render: "Upcoming.js: Error. Cannot render to element '{0}'. Does this id exist?",
+		err_format_config_id_invalid: "Upcoming.js: Error. Cannot render to element '{0}'. id not supported.",
+		err_config_required: "Upcoming.js: Error. Cannot render without configuration.",
+		last: "placeholder"
+	};
+	
+	languages.EN = languages["EN-us"] = res;
 
 	var 
 		instances = {}, //instances by div id
@@ -202,22 +210,22 @@ var upcoming = function () {
 				for (i = 0; i < entryCount; i++)
 				{
 					evt = root.feed.entry[i];
-					evt.startDate = xsDateTimeToDate(evt.gd$when[0].startTime);
+					evt.startMoment = xsDateTimeToMoment(evt.gd$when[0].startTime);
 					if (typeof evt.gd$when[0].endTime == 'undefined') {
-						evt.endDate = null;
+						evt.endMoment = null;
 						evt.allDay = true;
 					}
 					else {
-						evt.endDate = xsDateTimeToDate(evt.gd$when[0].endTime);
-						var startDate = evt.startDate.getDate();
-						var endDate = evt.endDate.getDate();
-						evt.daySpan = endDate - startDate;
+						evt.endMoment = xsDateTimeToMoment(evt.gd$when[0].endTime);
+						var startMoment = evt.startMoment.getDate();
+						var endMoment = evt.endMoment.getDate();
+						evt.daySpan = endMoment - startMoment;
 						if (evt.daySpan < 1) {
 							evt.allDay = false;
 						}
 						else if (evt.daySpan == 1) {
-							var startHours = evt.startDate.getHours();
-							var endHours = evt.endDate.getHours();
+							var startHours = evt.startMoment.getHours();
+							var endHours = evt.endMoment.getHours();
 							if ((startHours == endHours) && (startHours + endHours === 0))
 							{
 								evt.allDay = true;
@@ -286,11 +294,11 @@ var upcoming = function () {
 		//function to sort the events by date
 		function sortEvt(a, b)
 		{
-			return a.startDate.getTime() - b.startDate.getTime();
+			return a.startMoment.getTime() - b.startMoment.getTime();
 		}
 		
 		var evts = instance.evts;
-		progress(instance, "Sorting Events...");
+		progress(instance, res.prog_sorting_events);
 		evts.sort(sortEvt);
 		
 		var evtCats = buildEvtCats();
@@ -298,7 +306,7 @@ var upcoming = function () {
 		var evtCat = evtCats[0]; //first category of event
 		var evt = null;
 		
-		progress(instance, "Rendering Events...");
+		progress(instance, res.prog_rendering_events);
 		
 		// render each event in the feed
 		for (var i = 0; i < evts.length; i++) {
@@ -306,11 +314,10 @@ var upcoming = function () {
 			//Don't stop until we've categorized the event or ran out of categories
 			while(true) {
 				//whether or not the event can be within this category
-				var inCat = evtInCat(evt, evtCat); 
-				if (inCat === true) {
+				if (evtInCat(evt, evtCat) === true) {
 					//Display the section if we haven't already
 					if (evtCat.Section === null)
-						renderEvtCat(evtCat, evts);
+						renderEvtCatSection(evtCat, evts);
 					//Render the event in the section
 					renderEvt(evt, evtCat);
 					break;
@@ -330,23 +337,31 @@ var upcoming = function () {
 			done();
 		}
 		else {
-			status(instance, "No Events Found");
+			status(instance, res.prog_no_events_found);
 		}
 	}
 
 	function evtInCat(evt, evtCat)
 	{
-		if (evtCat.Start === null && evtCat.End === null)
-			return true;
-		var evtStart = evt.startDate.getTime();
-		var evtEnd = evt.endDate.getTime();
-		var startAfterCatEnd = evtStart - evtCat.End.getTime() > 0;
-		var endBeforeCatStart = evtEnd - evtCat.Start.getTime() < 0;
-		return (!startAfterCatEnd && !endBeforeCatStart);
+		return ( //"upcoming" category should always match
+			evtCat.Start === null && 
+			evtCat.End === null
+		) || ( //or we fall in the appropriate range
+			evt.startMoment.diff(evtCat.Start) >= 0 &&
+			evt.endMoment.diff(evtCat.End) <= 0
+		);
 	}
 
 	function buildEvtCats() {
-		var now = new Date();
+		var now = moment(); //now
+		var sod = moment(now).sod(); //Start of day
+		var eod = moment(now).eod(); //End of day
+		var sow = moment(sod)//Start of week
+			.subtract("day", sod.day()); //Offset to first day of week
+		var eow = moment(sow).add("week", 1); //End of week
+		var som = moment(now).startOf('month'); //Start of month
+		var eom = moment(som).add("month", 1); //End of month
+		
 		var today = {};
 		var week = {};
 		var nextWeek = {};
@@ -355,76 +370,71 @@ var upcoming = function () {
 		var year = {};
 		var upcoming = {};
 		
-		var nowMonth = now.getMonth();
-		var nowFullYear = now.getFullYear();
-		var nowDate = now.getDate();
-		var nowDay = now.getDay();
-		
-		today.Start = build_date(nowFullYear, nowMonth, nowDate, true);
-		today.End = build_date(nowFullYear, nowMonth, nowDate, false);
+		today.Start = moment(sod);
+		today.End = moment(eod);
 		today.Section = null;
 		today.DateFormat = res.time_format;
 		today.TimeFormat = res.time_format;
 		today.MultiDateFormat = res.date_format;
-		today.Caption = "Today";
-		today.Range = today.Start.print(res.date_format);
+		today.Caption = res.event_cat_today;
+		today.Range = today.Start.format(res.date_format);
 		
-		week.Start = build_date(nowFullYear, nowMonth, nowDate - nowDay, true);
-		week.End = build_date(nowFullYear, nowMonth, nowDate + 6 - nowDay, false);
+		week.Start = moment(sow);
+		week.End = moment(eow);
 		week.Section = null;
 		week.DateFormat = res.date_format;
 		week.TimeFormat = res.time_format;
 		week.MultiDateFormat = res.date_format;
-		week.Caption = "This Week";
-		week.StartMonth = week.Start.print('%b');
-		week.EndMonth = week.End.print('%b');
+		week.Caption = res.event_cat_this_week;
+		week.StartMonth = week.Start.format('%b');
+		week.EndMonth = week.End.format('%b');
 		if (week.StartMonth == week.EndMonth)
 			week.EndMonth = "";
 		else
 			week.EndMonth = week.EndMonth + " ";
-		week.Range = week.Start.print('%b %f - ')+week.EndMonth+week.End.print('%f');
+		week.Range = week.Start.format('%b %f - ')+week.EndMonth+week.End.format('%f');
 		
-		nextWeek.Start = build_date(nowFullYear, nowMonth, nowDate - nowDay + 7, true);
-		nextWeek.End = build_date(nowFullYear, nowMonth, nowDate + 13 - nowDay, false);
+		nextWeek.Start = moment(sow).add("week", 1);
+		nextWeek.End = moment(eow).add("week", 1);
 		nextWeek.Section = null;
 		nextWeek.DateFormat = res.date_format;
 		nextWeek.TimeFormat = res.time_format;
 		nextWeek.MultiDateFormat = res.date_format;
-		nextWeek.Caption = "Next Week";
-		nextWeek.StartMonth = nextWeek.Start.print('%b');
-		nextWeek.EndMonth = nextWeek.End.print('%b');
+		nextWeek.Caption = res.event_cat_next_week;
+		nextWeek.StartMonth = nextWeek.Start.format('%b');
+		nextWeek.EndMonth = nextWeek.End.format('%b');
 		if (nextWeek.StartMonth == nextWeek.EndMonth)
 			nextWeek.EndMonth = "";
 		else
 			nextWeek.EndMonth = nextWeek.EndMonth + " ";
-		nextWeek.Range = nextWeek.Start.print('%b %f - ')+nextWeek.EndMonth+nextWeek.End.print('%f');
+		nextWeek.Range = nextWeek.Start.format('%b %f - ')+nextWeek.EndMonth+nextWeek.End.format('%f');
 		
-		month.Start = build_date(nowFullYear, nowMonth, 0, true);
-		month.End = build_date(nowFullYear, nowMonth+1, -1, false);
+		month.Start = moment(som);
+		month.End = moment(eom);
 		month.Section = null;
 		month.DateFormat = res.date_format;
 		month.TimeFormat = res.time_format;
 		month.MultiDateFormat = res.date_format;
-		month.Caption = "This Month";
-		month.Range = month.Start.print('%b %Y');
+		month.Caption = res.event_cat_this_month;
+		month.Range = month.Start.format('%b %Y');
 		
-		nextMonth.Start = build_date(nowFullYear, nowMonth+1, 1, true);
-		nextMonth.End = build_date(nowFullYear, nowMonth+2, -1, false);
+		nextMonth.Start = moment(som).add("month", 1);
+		nextMonth.End = moment(eom).add("month", 1);
 		nextMonth.Section = null;
 		nextMonth.DateFormat = res.date_format;
 		nextMonth.TimeFormat = res.time_format;
 		nextMonth.MultiDateFormat = res.date_format;
-		nextMonth.Caption = "Next Month";
-		nextMonth.Range = nextMonth.Start.print('%b %Y');
+		nextMonth.Caption = res.event_cat_next_month;
+		nextMonth.Range = nextMonth.Start.format('%b %Y');
 		
-		year.Start = build_date(nowFullYear, 0, 1, true);
-		year.End = build_date(nowFullYear+1, 0, -1, false);
+		year.Start = moment(now).startOf("year");
+		year.End = moment(now).endOf("year");
 		year.Section = null;
 		year.DateFormat = res.date_format;
 		year.TimeFormat = res.time_format;
 		year.MultiDateFormat = res.date_format;
-		year.Caption = "This Year";
-		year.Range = today.Start.print('%Y');
+		year.Caption = res.event_cat_this_year;
+		year.Range = today.Start.format('%Y');
 		
 		upcoming.Start = null;
 		upcoming.End = null;
@@ -433,13 +443,13 @@ var upcoming = function () {
 		upcoming.DateFormat = '%I:%M%p';
 		upcoming.TimeFormat = '%I:%M%p';
 		upcoming.MultiDateFormat = res.date_format;
-		upcoming.Caption = "Upcoming";
+		upcoming.Caption = res.event_cat_upcoming;
 		upcoming.Range = "";
 		
-		return new Array(today, week, nextWeek, month, nextMonth, year, upcoming);
+		return [today, week, nextWeek, month, nextMonth, year, upcoming];
 	}
 
-	function build_date(year, month, day, isStart) {
+	function buildDate(year, month, day, isStart) {
 		var d = new Date(year, month, day);
 		if (isStart === false)
 		{
@@ -455,29 +465,29 @@ var upcoming = function () {
 			d.setSeconds(0);
 			d.setMilliseconds(0);
 		}
-		return d;
+		return moment(d);
 	}
 
-	function render_when(evt, evtCat)
+	function renderWhen(evt, evtCat)
 	{
-		var dateString = evt.startDate.print(evtCat.DateFormat);
+		var dateString = evt.startMoment.format(evtCat.DateFormat);
 		if (evt.allDay)
 		{
-			dateString = evt.startDate.print(evtCat.DateFormat);
+			dateString = evt.startMoment.format(evtCat.DateFormat);
 		}
 		else if (evt.daySpan > 0)
 		{
-			dateString = evt.startDate.print(evtCat.DateFormat)+" - "+evt.endDate.print(evtCat.MultiDateFormat);
+			dateString = evt.startMoment.format(evtCat.DateFormat)+" - "+evt.endMoment.format(evtCat.MultiDateFormat);
 		}
 		else if (evt.daySpan === 0)
 		{
-			dateString = evt.startDate.print(evtCat.DateFormat)+ " ";
-			var startHours = evt.startDate.print('%i');
-			var startMins = evt.startDate.print('%M');
-			var startAmPm = evt.startDate.print("%p");
-			var endHours = evt.endDate.print("%i");
-			var endMins = evt.startDate.print('%M');
-			var endAmPm = evt.endDate.print("%p");
+			dateString = evt.startMoment.format(evtCat.DateFormat)+ " ";
+			var startHours = evt.startMoment.format('%i');
+			var startMins = evt.startMoment.format('%M');
+			var startAmPm = evt.startMoment.format("%p");
+			var endHours = evt.endMoment.format("%i");
+			var endMins = evt.startMoment.format('%M');
+			var endAmPm = evt.endMoment.format("%p");
 			if (startAmPm == endAmPm)
 				startAmPm = '';
 			if (startMins == "00")
@@ -500,7 +510,7 @@ var upcoming = function () {
 	}
 	
 	function isSimpleId(value) {
-		//HTML id is: [A-Za-z][-A-Za-z0-9_:.]*, but we allow a subset:
+		//HTML id is: [A-Za-z][A-Za-z0-9_:.]*, but we allow a subset:
 		var rx = /[A-Za-z][A-Za-z0-9_:.]*/;
 		return rx.test(value);
 	}
@@ -549,7 +559,7 @@ var upcoming = function () {
 		}
 
 		//When field
-		when = render_when(evt, evtCat);
+		when = renderWhen(evt, evtCat);
 		
 		//Root event element
 		divEvt = document.createElement('div');
@@ -608,7 +618,7 @@ var upcoming = function () {
 		}
 	}
 
-	function renderEvtCat(evtCat, evts)
+	function renderEvtCatSection(evtCat, evts)
 	{
 		var divSect, divSectHeader, divSectRange, divDetail;
 		divSect = document.createElement('div');
@@ -631,7 +641,7 @@ var upcoming = function () {
 	//and outputs a human-readable form of this date or date/time.
 	//@param {string} gCalTime is the xs:date or xs:dateTime formatted string
 	//@return {string} is the human-readable date or date/time string
-	function xsDateTimeToDate(gCalTime) { 
+	function xsDateTimeToMoment(gCalTime) { 
 		// text for regex matches
 		var remtxt = gCalTime;
 
@@ -684,7 +694,7 @@ var upcoming = function () {
 		//var originalDateEpoch = Date.UTC(year, month - 1, dateMonth - 1, hours, mins);
 		//var gmtDateEpoch = originalDateEpoch + totalCorrMins * 1000 * 60;
 		var ld = new Date(year, month - 1, dateMonth, hours, mins);
-		return ld;
+		return moment(ld);
 	}
 	return {
 		render: publicRender,
