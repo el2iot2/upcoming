@@ -80,7 +80,7 @@ var upcoming = function () {
 		//Build our instance
 		var instance = instances[config.id] = {
 			id: config.id || res.default_div_id,
-			max_results: config.max_results || 15,
+			max_results: config.max_results || 5,
 			expectedFeeds: [],
 			ui: { //Details about html ui for instance
 				div: null, //Root div
@@ -97,7 +97,8 @@ var upcoming = function () {
 					idSuffix: config.prog.idSuffix || "_evts"
 				}
 			},
-			evts: [] //The listing of evt data
+			evts: [], //The listing of evt data
+			evtCats: buildEvtCats() //Our instance event categories
 		};
 		
 		//Shortcut vars
@@ -203,38 +204,19 @@ var upcoming = function () {
 			evts = instance.evts;
 			startIndex = evts.length;
 			
-			if (root.feed.entry !== null)
-			{
+			if (root.feed.entry !== null) {
 				entryCount = root.feed.entry.length;
 				evts[startIndex + entryCount - 1] = null; //Resize once to hold new events
-				for (i = 0; i < entryCount; i++)
-				{
+				for (i = 0; i < entryCount; i++) {
 					evt = root.feed.entry[i];
 					evt.startMoment = xsDateTimeToMoment(evt.gd$when[0].startTime);
-					if (typeof evt.gd$when[0].endTime == 'undefined') {
-						evt.endMoment = null;
-						evt.allDay = true;
+					if (typeof evt.gd$when[0].endTime !== 'undefined') {
+						evt.endMoment = xsDateTimeToMoment(evt.gd$when[0].endTime);
 					}
 					else {
-						evt.endMoment = xsDateTimeToMoment(evt.gd$when[0].endTime);
-						var startMoment = evt.startMoment.getDate();
-						var endMoment = evt.endMoment.getDate();
-						evt.daySpan = endMoment - startMoment;
-						if (evt.daySpan < 1) {
-							evt.allDay = false;
-						}
-						else if (evt.daySpan == 1) {
-							var startHours = evt.startMoment.getHours();
-							var endHours = evt.endMoment.getHours();
-							if ((startHours == endHours) && (startHours + endHours === 0))
-							{
-								evt.allDay = true;
-								evt.daySpan = 1;
-							}
-						}
-						else
-							evt.allDay = false;
+						evt.endMoment = moment(evt.startMoment);
 					}
+					evt.duration = moment.duration(evt.endMoment.diff(evt.startMoment));
 					evts[startIndex+i] = evt;
 				}
 			}
@@ -253,19 +235,31 @@ var upcoming = function () {
 			renderEvts(instance);
 		}
 	}
-
+	
 	function progress(instance, msg) {
+		prog(instance.ui.prog, msg, instance.ui.prog.div);
+	}
+
+	function status(instance, msg) {
+		prog(null, msg, instance.ui.prog.div);
+	}
+
+	function done(instance)	{
+		prog(null, null, instance.ui.prog.div);
+	}
+	
+	function prog(prog, msg, div) {
 		var percentage = -1;
-		if (instance !== null) {
-			percentage = 100.0 * instance.prog_step / instance.prog_step;
+		if (prog !== null) {
+			percentage = 100.0 * prog.step / prog.steps;
 		}
 				
 		//Clear out the previous message
-		while (instance.ui.prog.div.childNodes.length > 0) {
-			instance.ui.prog.div.removeChild(instance.ui.prog.div.childNodes[0]);
+		while (div.childNodes.length > 0) {
+			div.removeChild(div.childNodes[0]);
 		}
 		if (msg !== null) {
-			instance.ui.prog.div.appendChild(document.createTextNode(msg));
+			div.appendChild(document.createTextNode(msg));
 		}
 		if (percentage >= 0)
 		{
@@ -275,18 +269,11 @@ var upcoming = function () {
 			divProgress.setAttribute('style', 'width: '+percentage+'px;');
 			divProgress.setAttribute('class', 'progressbar');
 			divBorder.appendChild(divProgress);
-			instance.ui.prog.div.appendChild(divBorder);
+			div.appendChild(divBorder);
 		}
 	}
 
-	function status(msg) {
-		progress(null, msg);
-	}
-
-	function done(instance)
-	{
-		progress(null, null);
-	}
+	
 
 	//writes the events from our feeds to the display
 	function renderEvts(instance) 
@@ -294,14 +281,14 @@ var upcoming = function () {
 		//function to sort the events by date
 		function sortEvt(a, b)
 		{
-			return a.startMoment.getTime() - b.startMoment.getTime();
+			return a.startMoment.diff(b.startMoment);
 		}
 		
 		var evts = instance.evts;
 		progress(instance, res.prog_sorting_events);
 		evts.sort(sortEvt);
 		
-		var evtCats = buildEvtCats();
+		var evtCats = instance.evtCats;
 		var iCat = 0;
 		var evtCat = evtCats[0]; //first category of event
 		var evt = null;
@@ -316,8 +303,8 @@ var upcoming = function () {
 				//whether or not the event can be within this category
 				if (evtInCat(evt, evtCat) === true) {
 					//Display the section if we haven't already
-					if (evtCat.Section === null)
-						renderEvtCatSection(evtCat, evts);
+					if (evtCat.div === null)
+						renderEvtCat(instance, evtCat);
 					//Render the event in the section
 					renderEvt(evt, evtCat);
 					break;
@@ -334,7 +321,7 @@ var upcoming = function () {
 			}
 		}
 		if (evts.length > 0) {
-			done();
+			done(instance);
 		}
 		else {
 			status(instance, res.prog_no_events_found);
@@ -347,11 +334,27 @@ var upcoming = function () {
 			evtCat.Start === null && 
 			evtCat.End === null
 		) || ( //or we fall in the appropriate range
-			evt.startMoment.diff(evtCat.Start) >= 0 &&
-			evt.endMoment.diff(evtCat.End) <= 0
+			evt.startMoment.diff(evtCat.Start) <= 0 && //event after category start
+			evtCat.End.diff(evt.startMoment) < 0 //and category end after event start
 		);
 	}
 
+	function buildWeekRange(week) {
+		week.StartMonth = week.Start.format('MMM')+" ";
+		week.EndMonth = week.End.format('MMM')+" ";
+		if (week.StartMonth == week.EndMonth)
+			week.Range = week.StartMonth+
+				week.Start.format('Do')+
+				" - "+
+				week.End.format('Do');
+		else
+			week.Range = week.StartMonth+
+				week.Start.format('Do')+
+				" - "+
+				week.EndMonth+
+				week.End.format('Do');
+	}
+	
 	function buildEvtCats() {
 		var now = moment(); //now
 		var sod = moment(now).sod(); //Start of day
@@ -372,7 +375,7 @@ var upcoming = function () {
 		
 		today.Start = moment(sod);
 		today.End = moment(eod);
-		today.Section = null;
+		today.div = null;
 		today.DateFormat = res.time_format;
 		today.TimeFormat = res.time_format;
 		today.MultiDateFormat = res.date_format;
@@ -381,67 +384,56 @@ var upcoming = function () {
 		
 		week.Start = moment(sow);
 		week.End = moment(eow);
-		week.Section = null;
+		week.div = null;
 		week.DateFormat = res.date_format;
 		week.TimeFormat = res.time_format;
 		week.MultiDateFormat = res.date_format;
 		week.Caption = res.event_cat_this_week;
-		week.StartMonth = week.Start.format('%b');
-		week.EndMonth = week.End.format('%b');
-		if (week.StartMonth == week.EndMonth)
-			week.EndMonth = "";
-		else
-			week.EndMonth = week.EndMonth + " ";
-		week.Range = week.Start.format('%b %f - ')+week.EndMonth+week.End.format('%f');
+		buildWeekRange(week);
 		
 		nextWeek.Start = moment(sow).add("week", 1);
 		nextWeek.End = moment(eow).add("week", 1);
-		nextWeek.Section = null;
+		nextWeek.div = null;
 		nextWeek.DateFormat = res.date_format;
 		nextWeek.TimeFormat = res.time_format;
 		nextWeek.MultiDateFormat = res.date_format;
 		nextWeek.Caption = res.event_cat_next_week;
 		nextWeek.StartMonth = nextWeek.Start.format('%b');
 		nextWeek.EndMonth = nextWeek.End.format('%b');
-		if (nextWeek.StartMonth == nextWeek.EndMonth)
-			nextWeek.EndMonth = "";
-		else
-			nextWeek.EndMonth = nextWeek.EndMonth + " ";
-		nextWeek.Range = nextWeek.Start.format('%b %f - ')+nextWeek.EndMonth+nextWeek.End.format('%f');
+		buildWeekRange(nextWeek);
 		
 		month.Start = moment(som);
 		month.End = moment(eom);
-		month.Section = null;
+		month.div = null;
 		month.DateFormat = res.date_format;
 		month.TimeFormat = res.time_format;
 		month.MultiDateFormat = res.date_format;
 		month.Caption = res.event_cat_this_month;
-		month.Range = month.Start.format('%b %Y');
+		month.Range = month.Start.format('MMM YYYY');
 		
 		nextMonth.Start = moment(som).add("month", 1);
 		nextMonth.End = moment(eom).add("month", 1);
-		nextMonth.Section = null;
+		nextMonth.div = null;
 		nextMonth.DateFormat = res.date_format;
 		nextMonth.TimeFormat = res.time_format;
 		nextMonth.MultiDateFormat = res.date_format;
 		nextMonth.Caption = res.event_cat_next_month;
-		nextMonth.Range = nextMonth.Start.format('%b %Y');
+		nextMonth.Range = nextMonth.Start.format('MMM YYYY');
 		
 		year.Start = moment(now).startOf("year");
 		year.End = moment(now).endOf("year");
-		year.Section = null;
+		year.div = null;
 		year.DateFormat = res.date_format;
 		year.TimeFormat = res.time_format;
 		year.MultiDateFormat = res.date_format;
 		year.Caption = res.event_cat_this_year;
-		year.Range = today.Start.format('%Y');
+		year.Range = year.Start.format('YYYY');
 		
 		upcoming.Start = null;
 		upcoming.End = null;
-		upcoming.Section = null;
+		upcoming.div = null;
 		upcoming.DateFormat = res.date_format;
-		upcoming.DateFormat = '%I:%M%p';
-		upcoming.TimeFormat = '%I:%M%p';
+		upcoming.TimeFormat = res.time_format;
 		upcoming.MultiDateFormat = res.date_format;
 		upcoming.Caption = res.event_cat_upcoming;
 		upcoming.Range = "";
@@ -449,59 +441,15 @@ var upcoming = function () {
 		return [today, week, nextWeek, month, nextMonth, year, upcoming];
 	}
 
-	function buildDate(year, month, day, isStart) {
-		var d = new Date(year, month, day);
-		if (isStart === false)
-		{
-			d.setHours(23);
-			d.setMinutes(59);
-			d.setSeconds(59);
-			d.setMilliseconds(999);
+	function renderWhen(evt, evtCat) {
+		if (evt.duration.asMilliseconds() === 0) {
+			return evt.startMoment.calendar();
 		}
-		else
-		{
-			d.setHours(0);
-			d.setMinutes(0);
-			d.setSeconds(0);
-			d.setMilliseconds(0);
+		else {
+			return evt.startMoment.calendar()+
+				" - "+
+				evt.duration.humanize();
 		}
-		return moment(d);
-	}
-
-	function renderWhen(evt, evtCat)
-	{
-		var dateString = evt.startMoment.format(evtCat.DateFormat);
-		if (evt.allDay)
-		{
-			dateString = evt.startMoment.format(evtCat.DateFormat);
-		}
-		else if (evt.daySpan > 0)
-		{
-			dateString = evt.startMoment.format(evtCat.DateFormat)+" - "+evt.endMoment.format(evtCat.MultiDateFormat);
-		}
-		else if (evt.daySpan === 0)
-		{
-			dateString = evt.startMoment.format(evtCat.DateFormat)+ " ";
-			var startHours = evt.startMoment.format('%i');
-			var startMins = evt.startMoment.format('%M');
-			var startAmPm = evt.startMoment.format("%p");
-			var endHours = evt.endMoment.format("%i");
-			var endMins = evt.startMoment.format('%M');
-			var endAmPm = evt.endMoment.format("%p");
-			if (startAmPm == endAmPm)
-				startAmPm = '';
-			if (startMins == "00")
-				startMins = "";
-			else
-				startMins = ":"+startMins;
-				
-			if (endMins == "00")
-				endMins = "";
-			else
-				endMins = ":"+endMins;
-			dateString = dateString + startHours + startMins + startAmPm + "-" + endHours + endMins + endAmPm;
-		}
-		return dateString;
 	}
 
 	function isUrl(value) {
@@ -529,8 +477,7 @@ var upcoming = function () {
 		if (typeof evt.gd$where[0].valueString != 'undefined')
 		{
 			where = evt.gd$where[0].valueString;
-			if (isUrl(evt.gd$where[0].valueString))
-			{
+			if (isUrl(evt.gd$where[0].valueString)) {
 				whereUrl = where;
 			}
 		}
@@ -596,30 +543,26 @@ var upcoming = function () {
 									"Created by: ".bold() + createdBy + "<br/>" : "")+
 								(description !== null ? 
 									"Description: ".bold() + "<div class='description'>"+description+"</div>" : "");
-		divDetail.style.display = 'none';
+		//divDetail.style.display = 'none';
 		divEvt.appendChild(divDetail);
-		evtCat.Section.appendChild(divEvt);
+		evtCat.div.appendChild(divEvt);
 	}
 
-	function toggleEvtDetail(evt_no)
-	{
+	function toggleEvtDetail(evt_no) {
 		var evtDiv, evtLink;
 		evtDiv = document.getElementById("evt_div_" + evt_no);
 		evtLink = document.getElementById("evt_tgl_" + evt_no);
-		if (evtDiv.style.display == 'none')
-		{
+		if (evtDiv.style.display == 'none') {
 			evtDiv.style.display = 'block';
 			evtLink.innerHTML = "&minus;";
 		}
-		else if (evtDiv.style.display == 'block')
-		{
+		else if (evtDiv.style.display == 'block') {
 			evtDiv.style.display ='none';
 			evtLink.innerHTML = "+";
 		}
 	}
 
-	function renderEvtCatSection(evtCat, evts)
-	{
+	function renderEvtCat(instance, evtCat)	{
 		var divSect, divSectHeader, divSectRange, divDetail;
 		divSect = document.createElement('div');
 		divSect.setAttribute('class', 'timespan');
@@ -633,8 +576,8 @@ var upcoming = function () {
 		divSectHeader.appendChild(divSectRange);
 		divDetail = document.createElement('div');
 		divSect.appendChild(divDetail);
-		evts.appendChild(divSect);
-		evtCat.Section = divDetail;
+		instance.ui.evts.div.appendChild(divSect);
+		evtCat.div = divDetail;
 	}
 
 	//Converts an xs:date or xs:dateTime formatted string into the local timezone
