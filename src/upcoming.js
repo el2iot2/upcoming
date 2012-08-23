@@ -1,7 +1,19 @@
 var upcoming = function () {
 	"use strict";
 	
+	if (!window.console) {
+		(function() {
+			var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
+		  "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+		  window.console = {};
+		  for (var i = 0; i < names.length; ++i) {
+			window.console[names[i]] = function() {};
+		  }
+		}());
+	}
+	
 	var languages = {};
+	var feedIndex = 0;
 	
 	var res = { //load resources, or fallback EN default
 		default_div_id: "upcoming",
@@ -147,10 +159,11 @@ var upcoming = function () {
 			if (!(feedInfo.uri in feeds)) { 
 				//key a new entry
 				//indicates the feed is expected, and what instance expects it
+				feedIndex++;
 				feed = feeds[feedInfo.uri] = {
 					data: null,
 					expectedInstances:{},
-					callback: "feed"+feeds.length
+					callback: "feed"+feedIndex
 				};
 				//Add a new callback that closes over the relevant instance
 				publicCallbacks[feed.callback] = makeFeedInstanceCallback(feedInfo.uri);
@@ -248,10 +261,10 @@ var upcoming = function () {
 		prog(null, null, instance.ui.prog.div);
 	}
 	
-	function prog(prog, msg, div) {
+	function prog(ctx, msg, div) {
 		var percentage = -1;
-		if (prog !== null) {
-			percentage = 100.0 * prog.step / prog.steps;
+		if (ctx !== null) {
+			percentage = 100.0 * ctx.step / ctx.steps;
 		}
 				
 		//Clear out the previous message
@@ -273,14 +286,10 @@ var upcoming = function () {
 		}
 	}
 
-	
-
 	//writes the events from our feeds to the display
-	function renderEvts(instance) 
-	{
+	function renderEvts(instance) {
 		//function to sort the events by date
-		function sortEvt(a, b)
-		{
+		function sortEvt(a, b) {
 			return a.startMoment.diff(b.startMoment);
 		}
 		
@@ -288,35 +297,29 @@ var upcoming = function () {
 		progress(instance, res.prog_sorting_events);
 		evts.sort(sortEvt);
 		
-		var evtCats = instance.evtCats;
-		var iCat = 0;
-		var evtCat = evtCats[0]; //first category of event
-		var evt = null;
+		var evtCats = instance.evtCats,
+			evtCatIndex, 
+			evtIndex,
+			evtCat, 
+			evt;
 		
 		progress(instance, res.prog_rendering_events);
 		
 		// render each event in the feed
-		for (var i = 0; i < evts.length; i++) {
-			evt = evts[i];
-			//Don't stop until we've categorized the event or ran out of categories
-			while(true) {
+		for (evtIndex = 0; evtIndex < evts.length; evtIndex++) {
+			evt = evts[evtIndex];
+			
+			for(evtCatIndex = 0; evtCatIndex < evtCats.length; evtCatIndex++) {
+				evtCat = evtCats[evtCatIndex];
+			
 				//whether or not the event can be within this category
-				if (evtInCat(evt, evtCat) === true) {
-					//Display the section if we haven't already
+				if (evtInCat(evt, evtCat)) {
+					//render the category if we haven't already
 					if (evtCat.div === null)
 						renderEvtCat(instance, evtCat);
-					//Render the event in the section
+					//Render the event to the category
 					renderEvt(evt, evtCat);
-					break;
-				}
-				else {
-					//If we still have another category
-					if (iCat < evtCats.length - 1) {
-						evtCat = evtCats[++iCat]; //ratchet the category and re-try the event
-					}
-					else {
-						break; //there shouldn't be any events left, but their membership should fail too
-					}
+					break; //Get a new event
 				}
 			}
 		}
@@ -328,42 +331,47 @@ var upcoming = function () {
 		}
 	}
 
-	function evtInCat(evt, evtCat)
-	{
-		return ( //"upcoming" category should always match
-			evtCat.Start === null && 
-			evtCat.End === null
-		) || ( //or we fall in the appropriate range
-			evt.startMoment.diff(evtCat.Start) <= 0 && //event after category start
-			evtCat.End.diff(evt.startMoment) < 0 //and category end after event start
-		);
+	function evtInCat(evt, evtCat) {
+		if (evtCat.start === null && evtCat.end === null) {
+			console.log("matched upcoming");
+			return false;
+		}
+		
+		var afterStart = evtCat.start.diff(evt.startMoment) <= 0;
+		var beforeEnd = evtCat.end.diff(evt.startMoment) > 0;
+		
+		console.log(evtCat.Caption +":"+ evt.startMoment.format()+" after "+evtCat.start.format()+" and before "+evtCat.end.format()+ " = "+(afterStart && beforeEnd));
+		
+		return afterStart && beforeEnd;
 	}
 
 	function buildWeekRange(week) {
-		week.StartMonth = week.Start.format('MMM')+" ";
-		week.EndMonth = week.End.format('MMM')+" ";
-		if (week.StartMonth == week.EndMonth)
-			week.Range = week.StartMonth+
-				week.Start.format('Do')+
+		week.startMonth = week.start.format('MMM')+" ";
+		week.endMonth = week.end.format('MMM')+" ";
+		if (week.startMonth == week.endMonth)
+			week.Range = week.startMonth+
+				week.start.format('Do')+
 				" - "+
-				week.End.format('Do');
+				week.end.format('Do');
 		else
-			week.Range = week.StartMonth+
-				week.Start.format('Do')+
+			week.Range = week.startMonth+
+				week.start.format('Do')+
 				" - "+
-				week.EndMonth+
-				week.End.format('Do');
+				week.endMonth+
+				week.end.format('Do');
 	}
 	
 	function buildEvtCats() {
-		var now = moment(); //now
+		return buildEvtCatsFrom(moment()); //now
+	}
+	
+	function buildEvtCatsFrom(now) {
 		var sod = moment(now).sod(); //Start of day
 		var eod = moment(now).eod(); //End of day
-		var sow = moment(sod)//Start of week
-			.subtract("day", sod.day()); //Offset to first day of week
-		var eow = moment(sow).add("week", 1); //End of week
+		var sow = moment(sod).subtract("days", sod.day());//Start of week
+		var eow = moment(sow).add("weeks", 1); //End of week
 		var som = moment(now).startOf('month'); //Start of month
-		var eom = moment(som).add("month", 1); //End of month
+		var eom = moment(som).add("months", 1); //End of month
 		
 		var today = {};
 		var week = {};
@@ -373,17 +381,17 @@ var upcoming = function () {
 		var year = {};
 		var upcoming = {};
 		
-		today.Start = moment(sod);
-		today.End = moment(eod);
+		today.start = moment(sod);
+		today.end = moment(eod);
 		today.div = null;
 		today.DateFormat = res.time_format;
 		today.TimeFormat = res.time_format;
 		today.MultiDateFormat = res.date_format;
 		today.Caption = res.event_cat_today;
-		today.Range = today.Start.format(res.date_format);
+		today.Range = today.start.format(res.date_format);
 		
-		week.Start = moment(sow);
-		week.End = moment(eow);
+		week.start = moment(sow);
+		week.end = moment(eow);
 		week.div = null;
 		week.DateFormat = res.date_format;
 		week.TimeFormat = res.time_format;
@@ -391,46 +399,46 @@ var upcoming = function () {
 		week.Caption = res.event_cat_this_week;
 		buildWeekRange(week);
 		
-		nextWeek.Start = moment(sow).add("week", 1);
-		nextWeek.End = moment(eow).add("week", 1);
+		nextWeek.start = moment(sow).add("week", 1);
+		nextWeek.end = moment(eow).add("week", 1);
 		nextWeek.div = null;
 		nextWeek.DateFormat = res.date_format;
 		nextWeek.TimeFormat = res.time_format;
 		nextWeek.MultiDateFormat = res.date_format;
 		nextWeek.Caption = res.event_cat_next_week;
-		nextWeek.StartMonth = nextWeek.Start.format('%b');
-		nextWeek.EndMonth = nextWeek.End.format('%b');
+		nextWeek.startMonth = nextWeek.start.format('MMM');
+		nextWeek.endMonth = nextWeek.end.format('MMM');
 		buildWeekRange(nextWeek);
 		
-		month.Start = moment(som);
-		month.End = moment(eom);
+		month.start = moment(som);
+		month.end = moment(eom);
 		month.div = null;
 		month.DateFormat = res.date_format;
 		month.TimeFormat = res.time_format;
 		month.MultiDateFormat = res.date_format;
 		month.Caption = res.event_cat_this_month;
-		month.Range = month.Start.format('MMM YYYY');
+		month.Range = month.start.format('MMM YYYY');
 		
-		nextMonth.Start = moment(som).add("month", 1);
-		nextMonth.End = moment(eom).add("month", 1);
+		nextMonth.start = moment(som).add("month", 1);
+		nextMonth.end = moment(eom).add("month", 1);
 		nextMonth.div = null;
 		nextMonth.DateFormat = res.date_format;
 		nextMonth.TimeFormat = res.time_format;
 		nextMonth.MultiDateFormat = res.date_format;
 		nextMonth.Caption = res.event_cat_next_month;
-		nextMonth.Range = nextMonth.Start.format('MMM YYYY');
+		nextMonth.Range = nextMonth.start.format('MMM YYYY');
 		
-		year.Start = moment(now).startOf("year");
-		year.End = moment(now).endOf("year");
+		year.start = moment(now).startOf("year");
+		year.end = moment(now).endOf("year");
 		year.div = null;
 		year.DateFormat = res.date_format;
 		year.TimeFormat = res.time_format;
 		year.MultiDateFormat = res.date_format;
 		year.Caption = res.event_cat_this_year;
-		year.Range = year.Start.format('YYYY');
+		year.Range = year.start.format('YYYY');
 		
-		upcoming.Start = null;
-		upcoming.End = null;
+		upcoming.start = null;
+		upcoming.end = null;
 		upcoming.div = null;
 		upcoming.DateFormat = res.date_format;
 		upcoming.TimeFormat = res.time_format;
