@@ -1,14 +1,35 @@
 var upcoming = function () {
 	"use strict";
 	
+	//return a closure to handle an expected JSONP callback
+	function makeEmptyFunc() {
+		return function() {};
+	}
+	
 	if (!window.console) {
 		(function() {
-			var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
-		  "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
-		  window.console = {};
-		  for (var i = 0; i < names.length; ++i) {
-			window.console[names[i]] = function() {};
-		  }
+			var names = [
+				"log",
+				"debug", 
+				"info", 
+				"warn", 
+				"error", 
+				"assert", 
+				"dir", 
+				"dirxml", 
+				"group", 
+				"groupEnd", 
+				"time", 
+				"timeEnd", 
+				"count", 
+				"trace", 
+				"profile", 
+				"profileEnd"
+			];
+			window.console = {};
+			for (var i = 0; i < names.length; ++i) {
+				window.console[names[i]] = makeEmptyFunc();
+			}
 		}());
 	}
 	
@@ -110,7 +131,7 @@ var upcoming = function () {
 				}
 			},
 			evts: [], //The listing of evt data
-			evtCats: buildEvtCats() //Our instance event categories
+			evtCats: buildEvtCatsFrom(moment()) //Our instance event categories, relative to "now"
 		};
 		
 		//Shortcut vars
@@ -340,7 +361,7 @@ var upcoming = function () {
 		var afterStart = evtCat.start.diff(evt.startMoment) <= 0;
 		var beforeEnd = evtCat.end.diff(evt.startMoment) > 0;
 		
-		console.log(evtCat.Caption +":"+ evt.startMoment.format()+" after "+evtCat.start.format()+" and before "+evtCat.end.format()+ " = "+(afterStart && beforeEnd));
+		console.log(evtCat.caption +":"+ evt.startMoment.format()+" after "+evtCat.start.format()+" and before "+evtCat.end.format()+ " = "+(afterStart && beforeEnd));
 		
 		return afterStart && beforeEnd;
 	}
@@ -349,31 +370,28 @@ var upcoming = function () {
 		week.startMonth = week.start.format('MMM')+" ";
 		week.endMonth = week.end.format('MMM')+" ";
 		if (week.startMonth == week.endMonth)
-			week.Range = week.startMonth+
+			week.range = week.startMonth+
 				week.start.format('Do')+
 				" - "+
 				week.end.format('Do');
 		else
-			week.Range = week.startMonth+
+			week.range = week.startMonth+
 				week.start.format('Do')+
 				" - "+
 				week.endMonth+
 				week.end.format('Do');
 	}
 	
-	function buildEvtCats() {
-		return buildEvtCatsFrom(moment()); //now
-	}
-	
-	function buildEvtCatsFrom(now) {
-		var sod = moment(now).sod(); //Start of day
-		var eod = moment(now).eod(); //End of day
+	function buildEvtCatsFrom(ctx) {
+		var sod = moment(ctx).sod(); //Start of day
+		var eod = moment(ctx).eod(); //End of day
 		var sow = moment(sod).subtract("days", sod.day());//Start of week
 		var eow = moment(sow).add("weeks", 1); //End of week
-		var som = moment(now).startOf('month'); //Start of month
+		var som = moment(ctx).startOf('month'); //Start of month
 		var eom = moment(som).add("months", 1); //End of month
 		
 		var today = {};
+		
 		var week = {};
 		var nextWeek = {};
 		var month = {};
@@ -384,28 +402,28 @@ var upcoming = function () {
 		today.start = moment(sod);
 		today.end = moment(eod);
 		today.div = null;
-		today.DateFormat = res.time_format;
-		today.TimeFormat = res.time_format;
-		today.MultiDateFormat = res.date_format;
-		today.Caption = res.event_cat_today;
-		today.Range = today.start.format(res.date_format);
+		today.dateFormat = res.time_format;
+		today.timeFormat = res.time_format;
+		today.multiDateFormat = res.date_format;
+		today.caption = res.event_cat_today;
+		today.range = today.start.format(res.date_format);
 		
 		week.start = moment(sow);
 		week.end = moment(eow);
 		week.div = null;
-		week.DateFormat = res.date_format;
-		week.TimeFormat = res.time_format;
-		week.MultiDateFormat = res.date_format;
-		week.Caption = res.event_cat_this_week;
+		week.dateFormat = res.date_format;
+		week.timeFormat = res.time_format;
+		week.multiDateFormat = res.date_format;
+		week.caption = res.event_cat_this_week;
 		buildWeekRange(week);
 		
 		nextWeek.start = moment(sow).add("week", 1);
 		nextWeek.end = moment(eow).add("week", 1);
 		nextWeek.div = null;
-		nextWeek.DateFormat = res.date_format;
-		nextWeek.TimeFormat = res.time_format;
-		nextWeek.MultiDateFormat = res.date_format;
-		nextWeek.Caption = res.event_cat_next_week;
+		nextWeek.dateFormat = res.date_format;
+		nextWeek.timeFormat = res.time_format;
+		nextWeek.multiDateFormat = res.date_format;
+		nextWeek.caption = res.event_cat_next_week;
 		nextWeek.startMonth = nextWeek.start.format('MMM');
 		nextWeek.endMonth = nextWeek.end.format('MMM');
 		buildWeekRange(nextWeek);
@@ -413,38 +431,38 @@ var upcoming = function () {
 		month.start = moment(som);
 		month.end = moment(eom);
 		month.div = null;
-		month.DateFormat = res.date_format;
-		month.TimeFormat = res.time_format;
-		month.MultiDateFormat = res.date_format;
-		month.Caption = res.event_cat_this_month;
-		month.Range = month.start.format('MMM YYYY');
+		month.dateFormat = res.date_format;
+		month.timeFormat = res.time_format;
+		month.multiDateFormat = res.date_format;
+		month.caption = res.event_cat_this_month;
+		month.range = month.start.format('MMM YYYY');
 		
 		nextMonth.start = moment(som).add("month", 1);
 		nextMonth.end = moment(eom).add("month", 1);
 		nextMonth.div = null;
-		nextMonth.DateFormat = res.date_format;
-		nextMonth.TimeFormat = res.time_format;
-		nextMonth.MultiDateFormat = res.date_format;
-		nextMonth.Caption = res.event_cat_next_month;
-		nextMonth.Range = nextMonth.start.format('MMM YYYY');
+		nextMonth.dateFormat = res.date_format;
+		nextMonth.timeFormat = res.time_format;
+		nextMonth.multiDateFormat = res.date_format;
+		nextMonth.caption = res.event_cat_next_month;
+		nextMonth.range = nextMonth.start.format('MMM YYYY');
 		
-		year.start = moment(now).startOf("year");
-		year.end = moment(now).endOf("year");
+		year.start = moment(ctx).startOf("year");
+		year.end = moment(ctx).endOf("year");
 		year.div = null;
-		year.DateFormat = res.date_format;
-		year.TimeFormat = res.time_format;
-		year.MultiDateFormat = res.date_format;
-		year.Caption = res.event_cat_this_year;
-		year.Range = year.start.format('YYYY');
+		year.dateFormat = res.date_format;
+		year.timeFormat = res.time_format;
+		year.multiDateFormat = res.date_format;
+		year.caption = res.event_cat_this_year;
+		year.range = year.start.format('YYYY');
 		
 		upcoming.start = null;
 		upcoming.end = null;
 		upcoming.div = null;
-		upcoming.DateFormat = res.date_format;
-		upcoming.TimeFormat = res.time_format;
-		upcoming.MultiDateFormat = res.date_format;
-		upcoming.Caption = res.event_cat_upcoming;
-		upcoming.Range = "";
+		upcoming.dateFormat = res.date_format;
+		upcoming.timeFormat = res.time_format;
+		upcoming.multiDateFormat = res.date_format;
+		upcoming.caption = res.event_cat_upcoming;
+		upcoming.range = "";
 		
 		return [today, week, nextWeek, month, nextMonth, year, upcoming];
 	}
@@ -576,10 +594,10 @@ var upcoming = function () {
 		divSect.setAttribute('class', 'timespan');
 		divSectHeader = document.createElement('div');
 		divSectHeader.setAttribute('class', 'caption');
-		divSectHeader.appendChild(document.createTextNode(evtCat.Caption));
+		divSectHeader.appendChild(document.createTextNode(evtCat.caption));
 		divSectRange = document.createElement('span');
 		divSectRange.setAttribute('class', 'range');
-		divSectRange.appendChild(document.createTextNode(evtCat.Range));
+		divSectRange.appendChild(document.createTextNode(evtCat.range));
 		divSect.appendChild(divSectHeader);
 		divSectHeader.appendChild(divSectRange);
 		divDetail = document.createElement('div');
