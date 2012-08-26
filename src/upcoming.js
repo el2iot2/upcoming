@@ -306,7 +306,7 @@ var upcoming = function () {
 			//see if anything else remains
 			for(var prop in instance.expectedFeeds) {
 				if (instance.expectedFeeds.hasOwnProperty(prop)) {
-					continue; //wait for later callback to render
+					return; //wait for later callback to render
 				}
 			}
 			renderEvts(instance);
@@ -347,6 +347,9 @@ var upcoming = function () {
 
 	//writes the events from our feeds to the display
 	function renderEvts(instance) {
+	
+		console.log("rendering " + instance.id);
+	
 		//function to sort the events by date
 		function sortEvt(a, b) {
 			return a.startMoment.diff(b.startMoment);

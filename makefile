@@ -2,15 +2,15 @@
 AJAXMIN:='C:\Program Files (x86)\Microsoft\Microsoft Ajax Minifier\ajaxmin.exe'
 
 # Define the list of full files
-BUILD_FILES := $(addprefix build/, upcoming.js upcoming_no_moment.js upcoming.css index.html)
-BUILD_FILES += $(addprefix build/min/, upcoming.js upcoming_no_moment.js upcoming.css index.html)
+BUILD_FILES := $(addprefix build/, upcoming.js upcoming_core.js upcoming.css index.html)
+BUILD_FILES += $(addprefix build/min/, upcoming.js upcoming_core.js upcoming.css index.html)
 
 # the javascript packaged into the full, final product
 JS_PARTS := $(addprefix src/, moment.js upcoming.js)
 JS_PARTS += $(addprefix src/dustjs/, dust-core-1.0.0.js upcoming_ui.js)
 
-# the javascript if you include moment.js separately
-JS_NO_MOMENT_PARTS := $(addprefix src/, upcoming.js)
+# the javascript if you include third party libs separately
+JS_CORE_PARTS := $(addprefix src/, upcoming.js)
 
 # the CSS
 CSS_PARTS := $(addprefix src/, upcoming.css)
@@ -29,8 +29,8 @@ build/upcoming.css : $(CSS_PARTS)
 build/upcoming.js : $(JS_PARTS)
 	$(AJAXMIN) $^ -o build\upcoming.js -clobber -pretty	
 
-build/upcoming_no_moment.js : $(JS_NO_MOMENT_PARTS)
-	$(AJAXMIN) $^ -o build\upcoming_no_moment.js -clobber -pretty	
+build/upcoming_core.js : $(JS_CORE_PARTS)
+	$(AJAXMIN) $^ -o build\upcoming_core.js -clobber -pretty	
 	
 build/index.html : src/index.html
 	cp $^ build
@@ -41,11 +41,11 @@ build/min/upcoming.css : $(CSS_PARTS)
 build/min/upcoming.js : $(JS_PARTS)
 	$(AJAXMIN) $^ -o build\min\upcoming.js -clobber	
 
-build/min/upcoming_no_moment.js : $(JS_NO_MOMENT_PARTS)
-	$(AJAXMIN) $^ -o build\min\upcoming_no_moment.js -clobber	
+build/min/upcoming_core.js : $(JS_CORE_PARTS)
+	$(AJAXMIN) $^ -o build\min\upcoming_core.js -clobber	
 	
 build/min/index.html : src/min.html
-	cp $^ build
+	cp $^ build/min/index.html
 
 .PHONY : clean
 clean :
