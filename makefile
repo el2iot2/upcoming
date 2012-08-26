@@ -1,5 +1,6 @@
 #http://ajaxmin.codeplex.com/
 AJAXMIN:='C:\Program Files (x86)\Microsoft\Microsoft Ajax Minifier\ajaxmin.exe'
+NODE:='C:\Program Files (x86)\nodejs\node.exe'
 
 # Define the list of full files
 BUILD_FILES := $(addprefix build/, upcoming.js upcoming_core.js upcoming.css index.html)
@@ -7,7 +8,8 @@ BUILD_FILES += $(addprefix build/min/, upcoming.js upcoming_core.js upcoming.css
 
 # the javascript packaged into the full, final product
 JS_PARTS := $(addprefix src/, moment.js upcoming.js)
-JS_PARTS += $(addprefix src/dustjs/, dust-core-1.0.0.js upcoming_ui.js)
+JS_PARTS += $(addprefix src/dustjs/, upcoming_ui.js upcoming_evtcats.js)
+JS_PARTS += $(addprefix src/dustjs/lib/, dust-core-1.0.0.js)
 
 # the javascript if you include third party libs separately
 JS_CORE_PARTS := $(addprefix src/, upcoming.js)
@@ -22,6 +24,9 @@ all : buildirs $(BUILD_FILES)
 
 buildirs : 
 	mkdir -p build\min
+
+src/dustjs/%.js : src/dustjs/%.dust
+	$(NODE) src/dustjs/bin/dustc -n=$* $< $@ 
 	
 build/upcoming.css : $(CSS_PARTS)
 	$(AJAXMIN) $^ -o build\upcoming.css -clobber -pretty

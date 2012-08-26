@@ -1,0 +1,15 @@
+{#evtCats} 
+{?evts} 
+<div class="evtcat">
+<span class="caption">{caption}</span>
+<span class="range">{range}</span>
+<div class="evts" id="{id}">
+{#evts}
+test
+{/evts}
+</div>
+</div>
+{:else}
+{res.no_events}
+{/evts}
+{/evtCats}

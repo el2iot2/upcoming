@@ -6,6 +6,18 @@ var upcoming = function () {
 		return function() {};
 	}
 	
+	function renderToElement(template, ctx, el) {
+		//render the event categories
+		dust.render(template, ctx, function(err, out) {
+			if (err !== null) {
+				error(err);
+			}
+			else {
+				el.innerHTML = out;
+			}
+		});
+	}
+	
 	if (!window.console) {
 		(function() {
 			var names = [
@@ -169,9 +181,7 @@ var upcoming = function () {
 		ui.div.setAttribute('class', ui.css);
 
 		//render the instance template
-		dust.render("upcoming_ui", ui, function(err, out) {
-			ui.div.innerHTML = out;
-		});
+		renderToElement("upcoming_ui", ui, ui.div);
 		
 		prog.div = document.getElementById(prog.id);
 		if (prog.div === null) {
@@ -378,38 +388,14 @@ var upcoming = function () {
 				//whether or not the event can be within this category
 				if (evtInCat(evt, evtCat)) {
 					//since events and categories are sorted, we can skip categories that are no longer fruitful
-					//evtCatStartIndex = evtIndex;
+					evtCatStartIndex = evtIndex;
 					evtCat.evts.push(evt);
 					break; //Get a new event
 				}
 			}
 		}
 		
-		for(evtCatIndex = 0; evtCatIndex < evtCats.length; evtCatIndex++) {
-			evtCat = evtCats[evtCatIndex];
-			//render the category if we haven't already
-			if (evtCat.div === null) {
-				renderEvtCat(instance, evtCat);
-			}
-			
-			if (evtCat.evts.length > 0) {
-				//todo display the cat
-			}
-			
-			for (evtIndex = 0; evtIndex < evtCat.evts.length; evtIndex++) {
-				evt = evtCat.evts[evtIndex];
-								
-				//Render the event to the category
-				renderEvt(evt, evtCat);
-			}
-		}
-		
-		if (evts.length > 0) {
-			done(instance);
-		}
-		else {
-			status(instance, res.prog_no_events_found);
-		}
+		renderToElement("upcoming_evtcats", {res: res, evtCats: evtCats}, instance.ui.evts.div);
 	}
 
 	function evtInCat(evt, evtCat) {
@@ -429,7 +415,7 @@ var upcoming = function () {
 	function buildWeekRange(week) {
 		week.startMonth = week.start.format('MMM')+" ";
 		week.endMonth = week.end.format('MMM')+" ";
-		if (week.startMonth == week.endMonth) {
+		if (week.startMonth === week.endMonth) {
 			week.range = week.startMonth+
 				week.start.format('Do')+
 				" - "+
@@ -663,24 +649,6 @@ var upcoming = function () {
 			evtDiv.style.display ='none';
 			evtLink.innerHTML = "+";
 		}
-	}
-
-	function renderEvtCat(instance, evtCat)	{
-		var divSect, divSectHeader, divSectRange, divDetail;
-		divSect = document.createElement('div');
-		divSect.setAttribute('class', 'timespan');
-		divSectHeader = document.createElement('div');
-		divSectHeader.setAttribute('class', 'caption');
-		divSectHeader.appendChild(document.createTextNode(evtCat.caption));
-		divSectRange = document.createElement('span');
-		divSectRange.setAttribute('class', 'range');
-		divSectRange.appendChild(document.createTextNode(evtCat.range));
-		divSect.appendChild(divSectHeader);
-		divSectHeader.appendChild(divSectRange);
-		divDetail = document.createElement('div');
-		divSect.appendChild(divDetail);
-		instance.ui.evts.div.appendChild(divSect);
-		evtCat.div = divDetail;
 	}
 
 	//Converts an xs:date or xs:dateTime formatted string into the local timezone

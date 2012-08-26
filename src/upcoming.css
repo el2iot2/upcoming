@@ -1,13 +1,13 @@
-div.prog
+.upcoming .prog
 {
 	float: left; width: 100%;
 }
-div.evts
+.upcoming .evts
 {
 	float: left; width: 100%;
 }
 
-span.toggle
+.upcoming .toggle
 {
 	text-decoration: none;
 	border: 1px solid #AAA;
@@ -35,14 +35,15 @@ div.evt_detail
 	font-size: smaller;
 }
 
-.timespan .caption
+.upcoming .evtcat .caption
 {
 	font-weight: bolder;
 	border-bottom: 1px solid #AAA;
 }
 
-.timespan .range
+.upcoming .evtcat .range
 {
+	float: left;
 	padding-left: .8em;
 	font-weight: normal;
 	font-variant: small-caps;
@@ -50,7 +51,7 @@ div.evt_detail
 	color: silver;
 }
 
-.timespan ul
+.upcoming .evtcat ul
 {
 	font-size: smaller;
 	text-indent: -4px;
@@ -58,7 +59,7 @@ div.evt_detail
 	list-style-type: none
 }
 
-.upcoming .progress
+.upcoming .prog
 {
 	width: 100px;
 	height: 5px; 
@@ -66,7 +67,7 @@ div.evt_detail
 	border: solid black 1px;
 }
 
-.upcoming .progress .bar
+.upcoming .prog .bar
 {
 	height: 100%; 
 	background: #AAA;
