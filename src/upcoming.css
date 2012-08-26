@@ -38,12 +38,15 @@ div.evt_detail
 .upcoming .evtcat .caption
 {
 	font-weight: bolder;
-	border-bottom: 1px solid #AAA;
+}
+
+.upcoming .evtcat .evts
+{
+	border-top: 1px solid #AAA;
 }
 
 .upcoming .evtcat .range
 {
-	float: left;
 	padding-left: .8em;
 	font-weight: normal;
 	font-variant: small-caps;
