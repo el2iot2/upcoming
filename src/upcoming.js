@@ -77,7 +77,7 @@ var upcoming = function () {
 	
 	//do a string format, but then raise a ui error
 	function formatError() {
-		error(format(arguments));
+		error(format.apply(this, arguments));
 	}
 	
 	//raise a ui error
@@ -109,25 +109,45 @@ var upcoming = function () {
 		};
 		config.evts = config.evts || {};
 		config.prog = config.prog || {};
+		config.prog.bdr = config.prog.bdr || {};
+		config.prog.bar = config.prog.bar || {};
+		config.prog.lbl = config.prog.lbl || {};
 		
+		var iid = config.id || res.default_div_id;
 		//Build our instance
 		var instance = instances[config.id] = {
-			id: config.id || res.default_div_id,
+			id: iid,
 			max_results: config.max_results || 5,
 			expectedFeeds: [],
 			ui: { //Details about html ui for instance
 				div: null, //Root div
+				css: config.css || "upcoming",
 				prog: { //Progress/status ui
+					id: iid + (config.prog.idSuffix || "_prog"),
 					div: null, //Created div
 					css: config.prog.css || "prog",
-					idSuffix: config.prog.idSuffix || "_prog",
 					steps: 0, //Total number of steps in progress
-					step: 0 //Current step 
+					step: 0, //Current step
+					bdr: {
+						id: iid + (config.prog.bdr.idSuffix || "_prog_bdr"),
+						css: config.prog.bdr.css || "bdr",
+						div: null
+					},
+					bar: {
+						id: iid + (config.prog.bar.idSuffix || "_prog_bar"),
+						css: config.prog.bar.css || "bar",
+						div: null
+					},
+					lbl: {
+						id: iid + (config.prog.lbl.idSuffix || "_prog_lbl"),
+						css: config.prog.lbl.css || "lbl",
+						div: null
+					}
 				},
 				evts: { //Event display ui
+					id: iid + (config.prog.idSuffix || "_evts"),
 					div: null, //Created div
-					css: config.evts.css || "evts",
-					idSuffix: config.prog.idSuffix || "_evts"
+					css: config.evts.css || "evts"
 				}
 			},
 			evts: [], //The listing of evt data
@@ -145,20 +165,43 @@ var upcoming = function () {
 			formatError(res.err_format_cannot_render, instance.id);
 			return;
 		}
+		
+		ui.div.setAttribute('class', ui.css);
 
-		//create progress ui
-		prog.div = document.createElement('div');
-		prog.div.setAttribute('class', prog.css);
-		prog.div.setAttribute('id', instance.id + prog.idSuffix);
+		//render the instance template
+		dust.render("upcoming_ui", ui, function(err, out) {
+			ui.div.innerHTML = out;
+		});
 		
-		//create evt ui
-		evts.div = document.createElement('div');
-		evts.div.setAttribute('class', evts.css);
-		evts.div.setAttribute('id', instance.id + evts.idSuffix);
+		prog.div = document.getElementById(prog.id);
+		if (prog.div === null) {
+			formatError(res.err_format_cannot_render, prog.id);
+			return;
+		}
 		
-		//hook it together
-		ui.div.appendChild(ui.prog.div);
-		ui.div.appendChild(ui.evts.div);
+		prog.lbl.div = document.getElementById(prog.lbl.id);
+		if (prog.lbl.div === null) {
+			formatError(res.err_format_cannot_render, prog.lbl.id);
+			return;
+		}
+		
+		prog.bar.div = document.getElementById(prog.bar.id);
+		if (prog.bar.div === null) {
+			formatError(res.err_format_cannot_render, prog.bar.id);
+			return;
+		}
+		
+		prog.bdr.div = document.getElementById(prog.bdr.id);
+		if (prog.bdr.div === null) {
+			formatError(res.err_format_cannot_render, prog.bdr.id);
+			return;
+		}
+		
+		evts.div = document.getElementById(evts.id);
+		if (evts.div === null) {
+			formatError(res.err_format_cannot_render, evts.id);
+			return;
+		}
 		
 		//process configured feeds
 		var i, feedInfo, feed;
@@ -271,39 +314,34 @@ var upcoming = function () {
 	}
 	
 	function progress(instance, msg) {
-		prog(instance.ui.prog, msg, instance.ui.prog.div);
+		prog(instance.ui.prog, msg, 100.0 * instance.ui.prog.step / instance.ui.prog.steps);
 	}
 
 	function status(instance, msg) {
-		prog(null, msg, instance.ui.prog.div);
+		prog(instance.ui.prog, msg, -1);
 	}
 
 	function done(instance)	{
-		prog(null, null, instance.ui.prog.div);
+		prog(instance.ui.prog, null, -1);
 	}
 	
-	function prog(ctx, msg, div) {
-		var percentage = -1;
-		if (ctx !== null) {
-			percentage = 100.0 * ctx.step / ctx.steps;
+	function prog(ui, msg, percentage) {
+		if (percentage >= 0) {
+			//ensure progress bar is visibile
+			ui.bdr.div.setAttribute('style', 'visibility: inline');
+			ui.bar.div.setAttribute('style', 'width: '+percentage+'px;');
 		}
-				
-		//Clear out the previous message
-		while (div.childNodes.length > 0) {
-			div.removeChild(div.childNodes[0]);
+		else {
+			//hide progress bar
+			ui.bdr.div.setAttribute('style', 'visibility: none');
 		}
-		if (msg !== null) {
-			div.appendChild(document.createTextNode(msg));
+		
+		if (msg === null) {
+			ui.lbl.div.setAttribute('style', 'visibility: none');
 		}
-		if (percentage >= 0)
-		{
-			var divBorder = document.createElement('div');
-			divBorder.setAttribute('class', 'progress');
-			var divProgress = document.createElement('div');
-			divProgress.setAttribute('style', 'width: '+percentage+'px;');
-			divProgress.setAttribute('class', 'progressbar');
-			divBorder.appendChild(divProgress);
-			div.appendChild(divBorder);
+		else {
+			ui.lbl.div.setAttribute('style', 'visibility: inline');
+			ui.lbl.div.innerHtml = msg;
 		}
 	}
 
@@ -319,31 +357,50 @@ var upcoming = function () {
 		evts.sort(sortEvt);
 		
 		var evtCats = instance.evtCats,
-			evtCatIndex, 
+			evtCatIndex,
+			evtCatStartIndex = 0,			
 			evtIndex,
 			evtCat, 
 			evt;
 		
 		progress(instance, res.prog_rendering_events);
 		
-		// render each event in the feed
+		// partition events into categories
 		for (evtIndex = 0; evtIndex < evts.length; evtIndex++) {
 			evt = evts[evtIndex];
 			
-			for(evtCatIndex = 0; evtCatIndex < evtCats.length; evtCatIndex++) {
+			for(evtCatIndex = evtCatStartIndex; evtCatIndex < evtCats.length; evtCatIndex++) {
 				evtCat = evtCats[evtCatIndex];
 			
 				//whether or not the event can be within this category
 				if (evtInCat(evt, evtCat)) {
-					//render the category if we haven't already
-					if (evtCat.div === null)
-						renderEvtCat(instance, evtCat);
-					//Render the event to the category
-					renderEvt(evt, evtCat);
+					//since events and categories are sorted, we can skip categories that are no longer fruitful
+					//evtCatStartIndex = evtIndex;
+					evtCat.evts.push(evt);
 					break; //Get a new event
 				}
 			}
 		}
+		
+		for(evtCatIndex = 0; evtCatIndex < evtCats.length; evtCatIndex++) {
+			evtCat = evtCats[evtCatIndex];
+			//render the category if we haven't already
+			if (evtCat.div === null) {
+				renderEvtCat(instance, evtCat);
+			}
+			
+			if (evtCat.evts.length > 0) {
+				//todo display the cat
+			}
+			
+			for (evtIndex = 0; evtIndex < evtCat.evts.length; evtIndex++) {
+				evt = evtCat.evts[evtIndex];
+								
+				//Render the event to the category
+				renderEvt(evt, evtCat);
+			}
+		}
+		
 		if (evts.length > 0) {
 			done(instance);
 		}
@@ -354,14 +411,14 @@ var upcoming = function () {
 
 	function evtInCat(evt, evtCat) {
 		if (evtCat.start === null && evtCat.end === null) {
-			console.log("matched upcoming");
+		//	console.log("matched upcoming");
 			return false;
 		}
 		
 		var afterStart = evtCat.start.diff(evt.startMoment) <= 0;
 		var beforeEnd = evtCat.end.diff(evt.startMoment) > 0;
 		
-		console.log(evtCat.caption +":"+ evt.startMoment.format()+" after "+evtCat.start.format()+" and before "+evtCat.end.format()+ " = "+(afterStart && beforeEnd));
+		//console.log(evtCat.caption +":"+ evt.startMoment.format()+" after "+evtCat.start.format()+" and before "+evtCat.end.format()+ " = "+(afterStart && beforeEnd));
 		
 		return afterStart && beforeEnd;
 	}
@@ -369,102 +426,119 @@ var upcoming = function () {
 	function buildWeekRange(week) {
 		week.startMonth = week.start.format('MMM')+" ";
 		week.endMonth = week.end.format('MMM')+" ";
-		if (week.startMonth == week.endMonth)
+		if (week.startMonth == week.endMonth) {
 			week.range = week.startMonth+
 				week.start.format('Do')+
 				" - "+
 				week.end.format('Do');
-		else
+		}
+		else {
 			week.range = week.startMonth+
 				week.start.format('Do')+
 				" - "+
 				week.endMonth+
 				week.end.format('Do');
+		}
+		return week;
 	}
 	
 	function buildEvtCatsFrom(ctx) {
-		var sod = moment(ctx).sod(); //Start of day
-		var eod = moment(ctx).eod(); //End of day
-		var sow = moment(sod).subtract("days", sod.day());//Start of week
-		var eow = moment(sow).add("weeks", 1); //End of week
-		var som = moment(ctx).startOf('month'); //Start of month
-		var eom = moment(som).add("months", 1); //End of month
+		var 
+			sod = moment(ctx).sod(), //Start of day
+			eod = moment(ctx).eod(), //End of day
+			sow = moment(sod).subtract("days", sod.day()),//Start of week
+			eow = moment(sow).add("weeks", 1), //End of week
+			snw = moment(eow), //Start of next week
+			enw = moment(snw).add("week", 1), //end of next week
+			som = moment(ctx).startOf('month'), //Start of month
+			eom = moment(som).add("months", 1), //End of month
+			snm = moment(eom), //Start of next month
+			enm = moment(snm).add("months", 1), //End of month
+			soy = moment(ctx).startOf("year"), //Start of year
+			eoy = moment(ctx).endOf("year"); //End of year
 		
-		var today = {};
+		return [
+			{//today
+				start: sod,
+				end: eod,
+				div: null,
+				evts: [],
+				dateFormat: res.time_format,
+				timeFormat: res.time_format,
+				multiDateFormat: res.date_format,
+				caption: res.event_cat_today,
+				range: sod.format(res.date_format)
+			}, 
+			buildWeekRange(
+				{//week
+					start: sow,
+					end: eow,
+					div: null,
+					evts: [],
+					dateFormat: res.date_format,
+					timeFormat: res.time_format,
+					multiDateFormat: res.date_format,
+					caption: res.event_cat_this_week
+				}
+			),	
+			buildWeekRange(
+				{//nextWeek
+					start: snw,
+					end: enw,
+					div: null,
+					evts: [],
+					dateFormat: res.date_format,
+					timeFormat: res.time_format,
+					multiDateFormat: res.date_format,
+					caption: res.event_cat_next_week
+				}
+			), 
+			{//month
+				start: som,
+				end: eom,
+				div: null,
+				evts: [],
+				dateFormat: res.date_format,
+				timeFormat: res.time_format,
+				multiDateFormat: res.date_format,
+				caption: res.event_cat_this_month,
+				range: som.format('MMM YYYY')
+			}, 
+			{//nextMonth
+				start: snm,
+				end: enm,
+				div: null,
+				evts: [],
+				dateFormat: res.date_format,
+				timeFormat: res.time_format,
+				multiDateFormat: res.date_format,
+				caption: res.event_cat_next_month,
+				range: snm.format('MMM YYYY')
+			}, 
+			{//year
+				start: soy,
+				end: eoy,
+				div: null,
+				evts: [],
+				dateFormat: res.date_format,
+				timeFormat: res.time_format,
+				multiDateFormat: res.date_format,
+				caption: res.event_cat_this_year,
+				range: soy.format('YYYY')
+			}, 
+			{//upcoming
+				start: null,
+				end: null,
+				div: null,
+				evts: [],
+				dateFormat: res.date_format,
+				timeFormat: res.time_format,
+				multiDateFormat: res.date_format,
+				caption: res.event_cat_upcoming,
+				range: ""
+			}
+		];
 		
-		var week = {};
-		var nextWeek = {};
-		var month = {};
-		var nextMonth = {};
-		var year = {};
-		var upcoming = {};
-		
-		today.start = moment(sod);
-		today.end = moment(eod);
-		today.div = null;
-		today.dateFormat = res.time_format;
-		today.timeFormat = res.time_format;
-		today.multiDateFormat = res.date_format;
-		today.caption = res.event_cat_today;
-		today.range = today.start.format(res.date_format);
-		
-		week.start = moment(sow);
-		week.end = moment(eow);
-		week.div = null;
-		week.dateFormat = res.date_format;
-		week.timeFormat = res.time_format;
-		week.multiDateFormat = res.date_format;
-		week.caption = res.event_cat_this_week;
-		buildWeekRange(week);
-		
-		nextWeek.start = moment(sow).add("week", 1);
-		nextWeek.end = moment(eow).add("week", 1);
-		nextWeek.div = null;
-		nextWeek.dateFormat = res.date_format;
-		nextWeek.timeFormat = res.time_format;
-		nextWeek.multiDateFormat = res.date_format;
-		nextWeek.caption = res.event_cat_next_week;
-		nextWeek.startMonth = nextWeek.start.format('MMM');
-		nextWeek.endMonth = nextWeek.end.format('MMM');
-		buildWeekRange(nextWeek);
-		
-		month.start = moment(som);
-		month.end = moment(eom);
-		month.div = null;
-		month.dateFormat = res.date_format;
-		month.timeFormat = res.time_format;
-		month.multiDateFormat = res.date_format;
-		month.caption = res.event_cat_this_month;
-		month.range = month.start.format('MMM YYYY');
-		
-		nextMonth.start = moment(som).add("month", 1);
-		nextMonth.end = moment(eom).add("month", 1);
-		nextMonth.div = null;
-		nextMonth.dateFormat = res.date_format;
-		nextMonth.timeFormat = res.time_format;
-		nextMonth.multiDateFormat = res.date_format;
-		nextMonth.caption = res.event_cat_next_month;
-		nextMonth.range = nextMonth.start.format('MMM YYYY');
-		
-		year.start = moment(ctx).startOf("year");
-		year.end = moment(ctx).endOf("year");
-		year.div = null;
-		year.dateFormat = res.date_format;
-		year.timeFormat = res.time_format;
-		year.multiDateFormat = res.date_format;
-		year.caption = res.event_cat_this_year;
-		year.range = year.start.format('YYYY');
-		
-		upcoming.start = null;
-		upcoming.end = null;
-		upcoming.div = null;
-		upcoming.dateFormat = res.date_format;
-		upcoming.timeFormat = res.time_format;
-		upcoming.multiDateFormat = res.date_format;
-		upcoming.caption = res.event_cat_upcoming;
-		upcoming.range = "";
-		
-		return [today, week, nextWeek, month, nextMonth, year, upcoming];
 	}
 
 	function renderWhen(evt, evtCat) {

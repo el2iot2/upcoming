@@ -1,0 +1,8 @@
+<div class="{prog.css}" id="{prog.id}">
+	<span class="{prog.lbl.css}" id="{prog.lbl.id}">&nbsp;</span>
+	<div class="{prog.bdr.css}" id="{prog.bdr.id}">
+		<div class="{prog.bar.css}" style="width: 0px;" id="{prog.bar.id}">
+		</div>
+	</div>
+</div>
+<div class="{evts.css}" id="{evts.id}"></div>

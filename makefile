@@ -7,6 +7,7 @@ BUILD_FILES += $(addprefix build/min/, upcoming.js upcoming_no_moment.js upcomin
 
 # the javascript packaged into the full, final product
 JS_PARTS := $(addprefix src/, moment.js upcoming.js)
+JS_PARTS += $(addprefix src/dustjs/, dust-core-1.0.0.js upcoming_ui.js)
 
 # the javascript if you include moment.js separately
 JS_NO_MOMENT_PARTS := $(addprefix src/, upcoming.js)
