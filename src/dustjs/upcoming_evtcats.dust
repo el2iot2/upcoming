@@ -1,15 +1,28 @@
 {#evtCats} 
-{?evts} 
-<div class="evtcat">
-<span class="caption">{caption}</span>
-<span class="range">{range}</span>
-<div class="evts" id="{id}">
-{#evts}
-test
-{/evts}
-</div>
-</div>
-{:else}
-{res.no_events}
-{/evts}
+	{?evts} 
+		<div class="evtcat">
+			<span class="caption">{caption}</span>
+			<span class="range">{range}</span>
+			<div class="evts">
+			{#evts}
+				<div class="evt">
+					<span class="toggle" id="evt_tgl_{id}" onclick="upcoming.toggleEvtDetail({id});">+</span>
+					<span class="title">{?titleHref}<a href="{titleHref}">{title}</a>{:else}{title}{/titleHref}</span>
+					<div class="detail" id="evt_dtl_{id}" style="display:none;">
+						<strong class="when">When</strong>
+						<span class="when">{when}</span><br />
+						<strong class="where">Where</strong>
+						<span class="where">{?whereHref}<a href="{whereHref}">{where}</a>{:else}{where}{/whereHref}</span><br />
+						<strong class="createdBy">Created by</strong>
+						<span class="createdBy">{createdBy}</span><br />
+						<strong class="description">Description</strong>
+						<span class="description">{description}</span>
+					</div>
+				</div>
+			{/evts}
+			</div>
+		</div>
+	{:else}
+		{res.no_events}
+	{/evts}
 {/evtCats}

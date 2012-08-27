@@ -1,5 +1,5 @@
 var upcoming = function () {
-	"use strict";
+	//"use strict";
 	
 	//return a closure to handle an expected JSONP callback
 	function makeEmptyFunc() {
@@ -45,8 +45,10 @@ var upcoming = function () {
 		}());
 	}
 	
-	var languages = {};
-	var feedIndex = 0;
+	var 
+		languages = {},
+		feedIndex = 0,
+		nextEvtId = 0;
 	
 	var res = { //load resources, or fallback EN default
 		default_div_id: "upcoming",
@@ -77,6 +79,11 @@ var upcoming = function () {
 		feeds = {},  //feeds by uri
 		publicCallbacks = {}; //callbacks by feedInstanceId
 
+	function getNextEvtId()
+	{
+		return (nextEvtId++);
+	}
+		
 	//do string formats with a placeholder: format("yada{0} {1} etc.", true, 1)
 	function format() {
 		var s = arguments[0];
@@ -110,7 +117,6 @@ var upcoming = function () {
 			formatError(res.err_format_config_id_invalid, config.id);
 			return;
 		}
-		
 		
 		//fallback if unspecified
 		config = config || {
@@ -275,48 +281,115 @@ var upcoming = function () {
 		};
 	}
 
+	//Build context (template view model) for our passed event
+	function buildEvtCtx(evt) {
+		var 
+			i,
+			ctx = {
+				title: evt.title.$t || null,
+				where: evt.gd$where[0].valueString || null,
+				description: evt.content.$t || null,
+				startMoment: xsDateTimeToMoment(evt.gd$when[0].startTime) || moment(),
+				startTime: evt.gd$when[0].startTime,
+				endMoment: xsDateTimeToMoment(evt.gd$when[0].endTime) || moment(evt.startMoment),
+				endTime: evt.gd$when[0].endTime,
+				createdBy: evt.author[0].name.$t || null,
+				id: getNextEvtId()
+			};
+		
+		//Calculate the event duration
+		ctx.duration = moment.duration(ctx.endMoment.diff(ctx.startMoment));
+	
+		//"where" field post-processing
+		if (isUrl(ctx.where)) {
+			//wrap in a link
+			ctx.whereHref = ctx.where;
+		}
+		else {
+			ctx.whereHref = "http://maps.google.com/maps?hl=en&q="+encodeURI(ctx.where);
+		}
+
+		//event url
+		ctx.href = null;
+		for (i = 0; i < evt.link.length; i++) {
+			if (
+				evt.link[i].type == 'text/html' && 
+				evt.link[i].type == 'alternate') {
+				ctx.href = encodeURI(evt.link[i].href);
+			}
+		}
+		
+		//"title" field post-processing
+		if (isUrl(ctx.title)) {
+			//wrap in a link
+			ctx.titleHref = ctx.title;
+		}
+		else {
+			ctx.titleHref = ctx.href;
+		}
+		
+		//when field
+		if (ctx.duration.asMilliseconds() === 0) {
+			ctx.when = ctx.startMoment.calendar();
+		}
+		else {
+			ctx.when = ctx.startMoment.calendar()+
+				" - "+
+				ctx.duration.humanize();
+		}
+		return ctx;
+	}
+	
+	//Build contexts (template view models) for our passed events
+	function buildEvtCtxs(entry) {
+		var evtCtxs = [];
+		if (entry !== null) {
+			evtCtxs[entry.length-1] = null; //Resize once to hold new events
+			for (var i = 0; i < entry.length; i++) {
+				evtCtxs[i] = buildEvtCtx(entry[i]);
+			}
+		}
+		return evtCtxs;
+	}
+	
 	//full callback handler for gcal data
 	function callback(root, feedUri) {
 		var feed = feeds[feedUri];
 		
 		//capture data if we have not yet done so
-		feed.data = feed.data || root.feed;
-		var evts, startIndex, entryCount, instance, feedInfo, evt, i, instanceId;
+		feed.evts = feed.evts || buildEvtCtxs(root.feed.entry);
+		var instanceEvts, startIndex, entryCount, instance, feedInfo, evt, i, instanceId;
 		
+		//process every instance that is expecting this feed data
 		for (instanceId in feed.expectedInstances) {
 			feedInfo = feed.expectedInstances[instanceId];
 			instance = instances[feedInfo.instance];
 			
-			//add an event array if one does not yet exist
-			evts = instance.evts;
-			startIndex = evts.length;
+			instanceEvts = instance.evts;
+			startIndex = instanceEvts.length;
+			entryCount = feed.evts.length;
 			
-			if (root.feed.entry !== null) {
-				entryCount = root.feed.entry.length;
-				evts[startIndex + entryCount - 1] = null; //Resize once to hold new events
-				for (i = 0; i < entryCount; i++) {
-					evt = root.feed.entry[i];
-					evt.startMoment = xsDateTimeToMoment(evt.gd$when[0].startTime);
-					if (typeof evt.gd$when[0].endTime !== 'undefined') {
-						evt.endMoment = xsDateTimeToMoment(evt.gd$when[0].endTime);
-					}
-					else {
-						evt.endMoment = moment(evt.startMoment);
-					}
-					evt.duration = moment.duration(evt.endMoment.diff(evt.startMoment));
-					evts[startIndex+i] = evt;
-				}
+			//make room for new events
+			instanceEvts[startIndex + entryCount - 1] = null; 
+			//then copy them over
+			for (i = 0; i < entryCount; i++) {
+				instanceEvts[startIndex+i] = feed.evts[i];
 			}
 			
+			//We have progressed on this instance
+			instance.ui.prog.step++;
 			progress(instance, res.prog_loading_events);
 			
-			//remove this expected feed
+			//instance should no longer expect this feed
 			delete instance.expectedFeeds[feedInfo.uri];
 			
-			//see if anything else remains
+			//feed should no longer expect this instance
+			delete feed.expectedInstances[instanceId];
+			
+			//are we waiting for any more feeds?
 			for(var prop in instance.expectedFeeds) {
 				if (instance.expectedFeeds.hasOwnProperty(prop)) {
-					return; //wait for later callback to render
+					return; //yes. procrastinate.
 				}
 			}
 			renderEvts(instance);
@@ -338,19 +411,23 @@ var upcoming = function () {
 	function prog(ui, msg, percentage) {
 		if (percentage >= 0) {
 			//ensure progress bar is visibile
-			ui.bdr.div.setAttribute('style', 'visibility: inline');
+			ui.bdr.div.setAttribute('style', 'display: block;');
+			ui.bar.div.setAttribute('style', 'display: inline;');
 			ui.bar.div.setAttribute('style', 'width: '+percentage+'px;');
 		}
 		else {
 			//hide progress bar
-			ui.bdr.div.setAttribute('style', 'visibility: none');
+			ui.bdr.div.setAttribute('style', 'display: none;');
+			ui.bar.div.setAttribute('style', 'display: none;');
 		}
 		
 		if (msg === null) {
-			ui.lbl.div.setAttribute('style', 'visibility: none');
+			ui.lbl.div.setAttribute('style', 'display: none;');
+			ui.bdr.div.setAttribute('style', 'display: none;');
+			ui.bar.div.setAttribute('style', 'display: none;');
 		}
 		else {
-			ui.lbl.div.setAttribute('style', 'visibility: inline');
+			ui.lbl.div.setAttribute('style', 'display: block;');
 			ui.lbl.div.innerHtml = msg;
 		}
 	}
@@ -530,17 +607,6 @@ var upcoming = function () {
 		
 	}
 
-	function renderWhen(evt, evtCat) {
-		if (evt.duration.asMilliseconds() === 0) {
-			return evt.startMoment.calendar();
-		}
-		else {
-			return evt.startMoment.calendar()+
-				" - "+
-				evt.duration.humanize();
-		}
-	}
-
 	function isUrl(value) {
 		var rx = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 		return rx.test(value);
@@ -552,95 +618,10 @@ var upcoming = function () {
 		return rx.test(value);
 	}
 
-	function renderEvt(evt, evtCat) {
-		var title, where, whereUrl, description, start, spanTitle, createdBy, eventUrl, when, divEvt, toggle, titleUrl, linki, divDetail;
-		
-		//Title field
-		title = null;
-		if (typeof evt.title.$t !== undefined)
-			title = evt.title.$t;
-		
-		//Where Field
-		where = null;
-		whereUrl = null;
-		if (typeof evt.gd$where[0].valueString != 'undefined')
-		{
-			where = evt.gd$where[0].valueString;
-			if (isUrl(evt.gd$where[0].valueString)) {
-				whereUrl = where;
-			}
-		}
-		
-		//Description field
-		description = null;
-		if (typeof evt.content.$t != 'undefined')
-			description = evt.content.$t;
-		
-		start = evt.gd$when[0].startTime;
-		
-		//Created By field
-		createdBy = null;
-		if (typeof evt.author[0].name != 'undefined')
-		{
-			createdBy = evt.author[0].name.$t;
-		}
-		//Event URL field
-		eventUrl = null;
-		for (linki = 0; linki < evt.link.length; linki++) 
-		{
-			if (evt.link[linki].type == 'text/html' && evt.link[linki].type == 'alternate') 
-			{
-				eventUrl = evt.link[linki].href;
-			}
-		}
-
-		//When field
-		when = renderWhen(evt, evtCat);
-		
-		//Root event element
-		divEvt = document.createElement('div');
-		
-		//expansion toggle element
-		toggle = document.createElement('span');
-		toggle.setAttribute('id', 'evt_tgl_'+evt);
-		toggle.setAttribute('class', 'toggle');
-		toggle.onclick = function() { toggleEvtDetail(evt); };
-		toggle.appendChild(document.createTextNode('+'));
-		divEvt.appendChild(toggle);
-		
-		//Title element
-		spanTitle = document.createElement('span');
-		spanTitle.setAttribute('id', 'evt_hdr_'+evt);
-		spanTitle.setAttribute('class', 'title');
-		
-		//Figure out our title URL
-		titleUrl = (whereUrl !== null ? whereUrl : eventUrl);
-		
-		//either title or title link
-		spanTitle.innerHTML = (titleUrl === null ? title : "<a href='"+ encodeURI(titleUrl)+"'>"+title+"</a>");
-		divEvt.appendChild(spanTitle);
-		
-		divDetail = document.createElement('div');
-		divDetail.setAttribute('id', 'evt_div_'+evt);
-		divDetail.setAttribute('class', 'evt_detail');
-		evt++;
-		divDetail.innerHTML = (when !== null ? 
-									"When: ".bold() + when + "<br/>" : "")+
-								(where !== null && whereUrl=== null ? 
-									"Where: ".bold() + "<a href='http://maps.google.com/maps?hl=en&q="+encodeURI(where)+"'>"+where+"</a><br/>" : "")+
-								(createdBy !== null ? 
-									"Created by: ".bold() + createdBy + "<br/>" : "")+
-								(description !== null ? 
-									"Description: ".bold() + "<div class='description'>"+description+"</div>" : "");
-		//divDetail.style.display = 'none';
-		divEvt.appendChild(divDetail);
-		evtCat.div.appendChild(divEvt);
-	}
-
-	function toggleEvtDetail(evt_no) {
+	function publicToggleEvtDetail(id) {
 		var evtDiv, evtLink;
-		evtDiv = document.getElementById("evt_div_" + evt_no);
-		evtLink = document.getElementById("evt_tgl_" + evt_no);
+		evtDiv = document.getElementById("evt_dtl_" + id);
+		evtLink = document.getElementById("evt_tgl_" + id);
 		if (evtDiv.style.display == 'none') {
 			evtDiv.style.display = 'block';
 			evtLink.innerHTML = "&minus;";
@@ -658,6 +639,9 @@ var upcoming = function () {
 	function xsDateTimeToMoment(gCalTime) { 
 		// text for regex matches
 		var remtxt = gCalTime;
+		
+		if (typeof gCalTime === 'undefined')
+			return gCalTime; //return undefined
 
 		function consume(retxt) 
 		{
@@ -712,6 +696,7 @@ var upcoming = function () {
 	}
 	return {
 		render: publicRender,
+		toggleEvtDetail: publicToggleEvtDetail,
 		callbacks: publicCallbacks
 	};
 }();

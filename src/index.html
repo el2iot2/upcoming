@@ -8,16 +8,22 @@
   <script type="text/javascript" src="upcoming.js"></script>
 </head>
 <body>
-	<p>This is a simple public calendar feed, showing movie and dvd releases:</p>
-	<!--A div to house a simple public calendar-->
-	<div id="simple"></div>
-	<p>This shows multiple public feeds aggregated:</p>
-	<!--Multiple calendar feeds-->
-	<div id="multi"></div>
+	<div style="width:30%; float:left; margin:10%;">
+		<h3>US Holidays</h3>
+		<p>This is a single public calendar feed of US Holidays:</p>
+		<!--A div to house a simple public calendar-->
+		<div id="simple"></div>
+	</div>
+	<div style="width:30%; float:right; margin:10%;">
+		<h3>Geek Holidays + Phases of the Moon</h3>
+		<p>This one aggregates Geek Holidays and Phases of the Moon:</p>
+		<!--Multiple calendar feeds-->
+		<div id="multi"></div>
+	</div>
 	<!--Inline Javascript to initialize upcoming.js-->
 <script type="text/javascript">
 	//render the first calendar
-	/*upcoming.render({
+	upcoming.render({
       //pass the id of the DIV container
 	  id : "simple",     
 	  //list one or more Google Calendar IDs in an array
@@ -26,16 +32,14 @@
          //Calendar IDs are listed on the google calendar settings in the "calendar address" sections
          "usa__en@holiday.calendar.google.com" //US Holidays
       ]
-    });*/
+    });
 	
 	//and now, another
 	upcoming.render({
 		id : "multi",     
 		feeds : [	
-			"usa__en@holiday.calendar.google.com", //US Holidays
 			"3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com", //Geek Holidays
 			"ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com", //Phases of the Moon
-			//"daynum@group.v.calendar.google.com" //Day of the year
 		]
     });
 </script>
