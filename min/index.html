@@ -1,0 +1,43 @@
+<html>
+<head>
+<!-- Project Page - http://github.com/devfuel/upcoming -->
+<title>upcoming.js Example</title>
+  <!-- include the default styling file for upcoming.js-->
+  <link rel="stylesheet" type="text/css" media="all" href="upcoming.css" title="system" />
+  <!-- include the JavaScript routines that make upcoming.js work-->
+  <script type="text/javascript" src="upcoming.js"></script>
+</head>
+<body>
+	<p>This is a simple public calendar feed, showing movie and dvd releases:</p>
+	<!--A div to house a simple public calendar-->
+	<div id="simple"></div>
+	<p>This shows multiple public feeds aggregated:</p>
+	<!--Multiple calendar feeds-->
+	<div id="multi"></div>
+	<!--Inline Javascript to initialize upcoming.js-->
+<script type="text/javascript">
+	//render the first calendar
+	/*upcoming.render({
+      //pass the id of the DIV container
+	  id : "simple",     
+	  //list one or more Google Calendar IDs in an array
+	  feeds : 
+	  [	
+         //Calendar IDs are listed on the google calendar settings in the "calendar address" sections
+         "usa__en@holiday.calendar.google.com" //US Holidays
+      ]
+    });*/
+	
+	//and now, another
+	upcoming.render({
+	  id : "multi",     
+	  feeds : 
+	  [	
+         "usa__en@holiday.calendar.google.com", //US Holidays
+         "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com", //Geek Holidays
+		 "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com" //Phases of the Moon
+      ]
+    });
+</script>
+</body>
+</html>
