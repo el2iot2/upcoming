@@ -52,10 +52,10 @@ var upcoming = function () {
 	
 	var res = { //load resources, or fallback EN default
 		default_div_id: "upcoming",
-		prog_requesting_feed: "Requesting Feed...",
-		prog_loading_events: "Loading Events...",
-		prog_sorting_events: "Sorting Events...",
-		prog_rendering_events: "Rendering Events...",
+		prog_init: "Initializing...",
+		prog_process_feed: "Processing Feed {0}...",
+		prog_sort: "Sorting Events...",
+		prog_render: "Rendering Events...",
 		prog_no_events_found: "No Events Found.",
 		event_cat_today: "Today",
 		event_cat_this_week: "This Week",
@@ -144,8 +144,9 @@ var upcoming = function () {
 					id: iid + (config.prog.idSuffix || "_prog"),
 					div: null, //Created div
 					css: config.prog.css || "prog",
-					steps: 0, //Total number of steps in progress
-					step: 0, //Current step
+					msgs: {}, 
+					step: 0,
+					steps: 0,
 					bdr: {
 						id: iid + (config.prog.bdr.idSuffix || "_prog_bdr"),
 						css: config.prog.bdr.css || "bdr",
@@ -176,6 +177,11 @@ var upcoming = function () {
 		var ui = instance.ui;
 		var prog = instance.ui.prog;
 		var evts = instance.ui.evts;
+		
+		//specify known steps
+		expectStep(instance, "init", res.prog_init);
+		expectStep(instance, "sort", res.prog_sort);
+		expectStep(instance, "render", res.prog_render);
 		
 		//Find root instance id
 		ui.div = document.getElementById(instance.id);
@@ -233,7 +239,7 @@ var upcoming = function () {
 			instance.expectedFeeds[feedInfo.uri] = feedInfo;
 		
 			//indicate another step
-			prog.steps++;
+			expectStep(instance, feedInfo.id, format(res.prog_process_feed, i+1));
 		
 			//If we haven't seen this feed before
 			if (!(feedInfo.uri in feeds)) { 
@@ -258,8 +264,6 @@ var upcoming = function () {
 					"&orderby=starttime"+
 					"&max-results="+encodeURIComponent(instance.max_results)+
 					"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
-				//report our progress
-				progress(instance, res.prog_requesting_feed);
 			}
 			else {
 				//A key exists, so retrieve it
@@ -272,6 +276,9 @@ var upcoming = function () {
 				} 
 			}
 		}
+		
+		//display the progress ui
+		reportStep(instance, "init");
 	}
 	
 	//return a closure to handle an expected JSONP callback
@@ -360,10 +367,15 @@ var upcoming = function () {
 		feed.evts = feed.evts || buildEvtCtxs(root.feed.entry);
 		var instanceEvts, startIndex, entryCount, instance, feedInfo, evt, i, instanceId;
 		
+		
+		
 		//process every instance that is expecting this feed data
 		for (instanceId in feed.expectedInstances) {
 			feedInfo = feed.expectedInstances[instanceId];
 			instance = instances[feedInfo.instance];
+			
+			//show processing of feed
+			reportStep(instance, feedInfo.id);
 			
 			instanceEvts = instance.evts;
 			startIndex = instanceEvts.length;
@@ -375,10 +387,6 @@ var upcoming = function () {
 			for (i = 0; i < entryCount; i++) {
 				instanceEvts[startIndex+i] = feed.evts[i];
 			}
-			
-			//We have progressed on this instance
-			instance.ui.prog.step++;
-			progress(instance, res.prog_loading_events);
 			
 			//instance should no longer expect this feed
 			delete instance.expectedFeeds[feedInfo.uri];
@@ -393,41 +401,46 @@ var upcoming = function () {
 				}
 			}
 			renderEvts(instance);
+			reportStep(instance, "render");
 		}
 	}
 	
-	function progress(instance, msg) {
-		prog(instance.ui.prog, msg, 100.0 * instance.ui.prog.step / instance.ui.prog.steps);
+	function expectStep(instance, step, msg) {
+		var ui = instance.ui.prog;
+		ui.msgs[step] = msg;
+		ui.steps++;
 	}
-
-	function status(instance, msg) {
-		prog(instance.ui.prog, msg, -1);
-	}
-
-	function done(instance)	{
-		prog(instance.ui.prog, null, -1);
+	
+	function reportStep(instance, step) {
+		var ui = instance.ui.prog;
+		//show progress ui
+		if (ui.step === 0) {
+			instance.ui.prog.div.style.display = "block";
+		}
+		var msg = ui.msgs[step];
+		ui.step++;
+		
+		if (ui.step >= ui.steps) {
+			//hide the ui
+			instance.ui.prog.div.style.display = "none";
+		}
+		else {
+			prog(ui, msg, 100.0 * ui.step / ui.steps);
+		}
 	}
 	
 	function prog(ui, msg, percentage) {
 		if (percentage >= 0) {
 			//ensure progress bar is visibile
-			ui.bdr.div.setAttribute('style', 'display: block;');
-			ui.bar.div.setAttribute('style', 'display: inline;');
-			ui.bar.div.setAttribute('style', 'width: '+percentage+'px;');
+			ui.bdr.div.style.display = "block";
+			ui.bar.div.style.width = percentage+'%';
 		}
 		else {
 			//hide progress bar
-			ui.bdr.div.setAttribute('style', 'display: none;');
-			ui.bar.div.setAttribute('style', 'display: none;');
+			ui.bdr.div.style.display = "none";
 		}
 		
-		if (msg === null) {
-			ui.lbl.div.setAttribute('style', 'display: none;');
-			ui.bdr.div.setAttribute('style', 'display: none;');
-			ui.bar.div.setAttribute('style', 'display: none;');
-		}
-		else {
-			ui.lbl.div.setAttribute('style', 'display: block;');
+		if (msg !== null) {
 			ui.lbl.div.innerHtml = msg;
 		}
 	}
@@ -435,16 +448,14 @@ var upcoming = function () {
 	//writes the events from our feeds to the display
 	function renderEvts(instance) {
 	
-		console.log("rendering " + instance.id);
-	
 		//function to sort the events by date
 		function sortEvt(a, b) {
 			return a.startMoment.diff(b.startMoment);
 		}
 		
 		var evts = instance.evts;
-		progress(instance, res.prog_sorting_events);
 		evts.sort(sortEvt);
+		
 		
 		var evtCats = instance.evtCats,
 			evtCatIndex,
@@ -453,7 +464,7 @@ var upcoming = function () {
 			evtCat, 
 			evt;
 		
-		progress(instance, res.prog_rendering_events);
+		reportStep(instance, "sort");
 		
 		// partition events into categories
 		for (evtIndex = 0; evtIndex < evts.length; evtIndex++) {
@@ -477,14 +488,11 @@ var upcoming = function () {
 
 	function evtInCat(evt, evtCat) {
 		if (evtCat.start === null && evtCat.end === null) {
-		//	console.log("matched upcoming");
 			return false;
 		}
 		
 		var afterStart = evtCat.start.diff(evt.startMoment) <= 0;
 		var beforeEnd = evtCat.end.diff(evt.startMoment) > 0;
-		
-		//console.log(evtCat.caption +":"+ evt.startMoment.format()+" after "+evtCat.start.format()+" and before "+evtCat.end.format()+ " = "+(afterStart && beforeEnd));
 		
 		return afterStart && beforeEnd;
 	}
@@ -604,7 +612,6 @@ var upcoming = function () {
 				range: ""
 			}
 		];
-		
 	}
 
 	function isUrl(value) {
