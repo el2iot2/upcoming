@@ -27,3 +27,4 @@ A special thanks to the following projects:
 
   * [dustjs](http://linkedin.github.com/dustjs) for pre-compiled templates
   * [moment.js](https://github.com/timrwood/moment/) for better date operations
+  * [jasmine](https://github.com/pivotal/jasmine) for spec-based testing
