@@ -3,7 +3,7 @@ AJAXMIN:='C:\Program Files (x86)\Microsoft\Microsoft Ajax Minifier\ajaxmin.exe'
 NODE:='C:\Program Files (x86)\nodejs\node.exe'
 
 # Define the list of full files
-BUILD_FILES := $(addprefix build/, upcoming.js upcoming_core.js upcoming.css index.html)
+BUILD_FILES := $(addprefix build/, upcoming.js upcoming_core.js upcoming.css index.html jasmine.html jasmine.css jasmine.js jasmine-html.js upcoming-spec.js)
 BUILD_FILES += $(addprefix build/min/, upcoming.js upcoming_core.js upcoming.css index.html)
 
 # the javascript packaged into the full, final product
@@ -39,6 +39,21 @@ build/upcoming_core.js : $(JS_CORE_PARTS)
 	
 build/index.html : src/index.html
 	cp $^ build
+
+build/jasmine.html : src/jasmine/SpecRunner.html
+	cp $^ build/jasmine.html
+	
+build/jasmine.js : src/jasmine/jasmine.js
+	cp $^ build
+
+build/jasmine-html.js : src/jasmine/jasmine-html.js
+	cp $^ build
+
+build/jasmine.css : src/jasmine/jasmine.css
+	cp $^ build
+
+build/upcoming-spec.js : src/upcoming-spec.js
+	cp $^ build	
 	
 build/min/upcoming.css : $(CSS_PARTS)
 	$(AJAXMIN) $^ -o build\min\upcoming.css -clobber

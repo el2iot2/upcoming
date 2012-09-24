@@ -46,9 +46,12 @@ var upcoming = function () {
 	}
 	
 	var 
-		languages = {},
-		feedIndex = 0,
-		nextEvtId = 0;
+		languages, //language data
+		feedIndex, //feed counter
+		nextEvtId, //event counter
+		instances, //instances by div id
+		feeds,  //feeds by uri
+		publicCallbacks; //callbacks by feedInstanceId
 	
 	var res = { //load resources, or fallback EN default
 		default_div_id: "upcoming",
@@ -71,13 +74,18 @@ var upcoming = function () {
 		err_config_required: "Upcoming.js: Error. Cannot render without configuration.",
 		last: "placeholder"
 	};
-	
-	languages.EN = languages["EN-us"] = res;
 
-	var 
-		instances = {}, //instances by div id
-		feeds = {},  //feeds by uri
-		publicCallbacks = {}; //callbacks by feedInstanceId
+	function publicReset() {
+		languages = {};
+		feedIndex = 0;
+		nextEvtId = 0;
+		languages.EN = languages["EN-us"] = res;
+		instances = {};
+		feeds = {};
+		publicCallbacks = {};
+	}
+	
+	publicReset();
 
 	function getNextEvtId()
 	{
@@ -130,6 +138,7 @@ var upcoming = function () {
 		config.prog.bdr = config.prog.bdr || {};
 		config.prog.bar = config.prog.bar || {};
 		config.prog.lbl = config.prog.lbl || {};
+		config.requestFeeds = config.requestFeeds || true;
 		
 		var iid = config.id || res.default_div_id;
 		//Build our instance
@@ -170,7 +179,8 @@ var upcoming = function () {
 				}
 			},
 			evts: [], //The listing of evt data
-			evtCats: buildEvtCatsFrom(moment()) //Our instance event categories, relative to "now"
+			evtCats: buildEvtCatsFrom(config.moment || moment()), //Our instance event categories, relative to "now"
+			getElementById: config.getElementById || document.getElementById
 		};
 		
 		//Shortcut vars
@@ -184,7 +194,7 @@ var upcoming = function () {
 		expectStep(instance, "render", res.prog_render);
 		
 		//Find root instance id
-		ui.div = document.getElementById(instance.id);
+		ui.div = instance.getElementById(instance.id);
 		if (ui.div === null) {
 			formatError(res.err_format_cannot_render, instance.id);
 			return;
@@ -195,31 +205,31 @@ var upcoming = function () {
 		//render the instance template
 		renderToElement("upcoming_ui", ui, ui.div);
 		
-		prog.div = document.getElementById(prog.id);
+		prog.div = instance.getElementById(prog.id);
 		if (prog.div === null) {
 			formatError(res.err_format_cannot_render, prog.id);
 			return;
 		}
 		
-		prog.lbl.div = document.getElementById(prog.lbl.id);
+		prog.lbl.div = instance.getElementById(prog.lbl.id);
 		if (prog.lbl.div === null) {
 			formatError(res.err_format_cannot_render, prog.lbl.id);
 			return;
 		}
 		
-		prog.bar.div = document.getElementById(prog.bar.id);
+		prog.bar.div = instance.getElementById(prog.bar.id);
 		if (prog.bar.div === null) {
 			formatError(res.err_format_cannot_render, prog.bar.id);
 			return;
 		}
 		
-		prog.bdr.div = document.getElementById(prog.bdr.id);
+		prog.bdr.div = instance.getElementById(prog.bdr.id);
 		if (prog.bdr.div === null) {
 			formatError(res.err_format_cannot_render, prog.bdr.id);
 			return;
 		}
 		
-		evts.div = document.getElementById(evts.id);
+		evts.div = instance.getElementById(evts.id);
 		if (evts.div === null) {
 			formatError(res.err_format_cannot_render, evts.id);
 			return;
@@ -256,14 +266,16 @@ var upcoming = function () {
 				feed.expectedInstances[instance.id] = feedInfo;
 				
 				//and begin retrieving data
-				document.write("<script type='text/javascript' "+
-					"src='"+ 
-					feedInfo.uri + //already encoded
-					"?alt=json-in-script&callback=upcoming.callbacks."+
-					encodeURIComponent(feed.callback)+
-					"&orderby=starttime"+
-					"&max-results="+encodeURIComponent(instance.max_results)+
-					"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
+				if (config.requestFeeds) {
+					document.write("<script type='text/javascript' "+
+						"src='"+ 
+						feedInfo.uri + //already encoded
+						"?alt=json-in-script&callback=upcoming.callbacks."+
+						encodeURIComponent(feed.callback)+
+						"&orderby=starttime"+
+						"&max-results="+encodeURIComponent(instance.max_results)+
+						"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
+				}
 			}
 			else {
 				//A key exists, so retrieve it
@@ -279,6 +291,7 @@ var upcoming = function () {
 		
 		//display the progress ui
 		reportStep(instance, "init");
+		return instance;
 	}
 	
 	//return a closure to handle an expected JSONP callback
@@ -704,6 +717,7 @@ var upcoming = function () {
 	return {
 		render: publicRender,
 		toggleEvtDetail: publicToggleEvtDetail,
-		callbacks: publicCallbacks
+		callbacks: publicCallbacks,
+		reset: publicReset
 	};
 }();
