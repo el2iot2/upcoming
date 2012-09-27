@@ -46,15 +46,15 @@ var upcoming = function () {
 	}
 	
 	var 
-		languages, //language data
+		languages = {}, //language data
 		feedIndex, //feed counter
 		nextEvtId, //event counter
-		instances, //instances by div id
-		feeds,  //feeds by uri
-		publicCallbacks; //callbacks by feedInstanceId
+		instances = {}, //instances by div id
+		feeds = {},  //feeds by uri
+		publicCallbacks = {}; //callbacks by feedInstanceId
 	
 	var res = { //load resources, or fallback EN default
-		default_div_id: "upcoming",
+		default_div_id: "upc",
 		prog_init: "Initializing...",
 		prog_process_feed: "Processing Feed {0}...",
 		prog_sort: "Sorting Events...",
@@ -76,13 +76,22 @@ var upcoming = function () {
 	};
 
 	function publicReset() {
-		languages = {};
+		//reset so that the module closure doesn't get stuck with an out-of-date object
+		resetObject(languages);
 		feedIndex = 0;
 		nextEvtId = 0;
 		languages.EN = languages["EN-us"] = res;
-		instances = {};
-		feeds = {};
-		publicCallbacks = {};
+		resetObject(instances);
+		resetObject(feeds);
+		resetObject(publicCallbacks);
+	}
+	
+	function resetObject(obj) {
+		for (prop in obj) { 
+			if (obj.hasOwnProperty(prop)) { 
+				delete obj[prop]; 
+			} 
+		}
 	}
 	
 	publicReset();
@@ -133,6 +142,7 @@ var upcoming = function () {
 			evts: null, //configuration for the events display ui
 			prog: null //configuration for the status/progress ui
 		};
+		config.feeds = config.feeds || [];
 		config.evts = config.evts || {};
 		config.prog = config.prog || {};
 		config.prog.bdr = config.prog.bdr || {};
@@ -142,7 +152,7 @@ var upcoming = function () {
 		
 		var iid = config.id || res.default_div_id;
 		//Build our instance
-		var instance = instances[config.id] = {
+		var instance = instances[iid] = {
 			id: iid,
 			max_results: config.max_results || 5,
 			expectedFeeds: [],
@@ -180,7 +190,12 @@ var upcoming = function () {
 			},
 			evts: [], //The listing of evt data
 			evtCats: buildEvtCatsFrom(config.moment || moment()), //Our instance event categories, relative to "now"
-			getElementById: config.getElementById || document.getElementById
+			getElementById: config.getElementById || 
+				function(id) { //closure to prevent losing "this" of document
+					return document.getElementById(id); },
+			write: config.write ||
+				function(exp) { //closure to prevent losing "this" of document
+					document.write(exp); }
 		};
 		
 		//Shortcut vars
@@ -208,31 +223,31 @@ var upcoming = function () {
 		prog.div = instance.getElementById(prog.id);
 		if (prog.div === null) {
 			formatError(res.err_format_cannot_render, prog.id);
-			return;
+			return null;
 		}
 		
 		prog.lbl.div = instance.getElementById(prog.lbl.id);
 		if (prog.lbl.div === null) {
 			formatError(res.err_format_cannot_render, prog.lbl.id);
-			return;
+			return null;
 		}
 		
 		prog.bar.div = instance.getElementById(prog.bar.id);
 		if (prog.bar.div === null) {
 			formatError(res.err_format_cannot_render, prog.bar.id);
-			return;
+			return null;
 		}
 		
 		prog.bdr.div = instance.getElementById(prog.bdr.id);
 		if (prog.bdr.div === null) {
 			formatError(res.err_format_cannot_render, prog.bdr.id);
-			return;
+			return null;
 		}
 		
 		evts.div = instance.getElementById(evts.id);
 		if (evts.div === null) {
 			formatError(res.err_format_cannot_render, evts.id);
-			return;
+			return null;
 		}
 		
 		//process configured feeds
@@ -263,19 +278,19 @@ var upcoming = function () {
 				};
 				//Add a new callback that closes over the relevant instance
 				publicCallbacks[feed.callback] = makeFeedInstanceCallback(feedInfo.uri);
+				
 				feed.expectedInstances[instance.id] = feedInfo;
 				
 				//and begin retrieving data
-				if (config.requestFeeds) {
-					document.write("<script type='text/javascript' "+
-						"src='"+ 
-						feedInfo.uri + //already encoded
-						"?alt=json-in-script&callback=upcoming.callbacks."+
-						encodeURIComponent(feed.callback)+
-						"&orderby=starttime"+
-						"&max-results="+encodeURIComponent(instance.max_results)+
-						"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
-				}
+				instance.write("<script type='text/javascript' "+
+					"src='"+ 
+					feedInfo.uri + //already encoded
+					"?alt=json-in-script&callback=upcoming.callbacks."+
+					encodeURIComponent(feed.callback)+
+					"&orderby=starttime"+
+					"&max-results="+encodeURIComponent(instance.max_results)+
+					"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
+				
 			}
 			else {
 				//A key exists, so retrieve it
@@ -380,12 +395,13 @@ var upcoming = function () {
 		feed.evts = feed.evts || buildEvtCtxs(root.feed.entry);
 		var instanceEvts, startIndex, entryCount, instance, feedInfo, evt, i, instanceId;
 		
-		
-		
 		//process every instance that is expecting this feed data
 		for (instanceId in feed.expectedInstances) {
 			feedInfo = feed.expectedInstances[instanceId];
-			instance = instances[feedInfo.instance];
+			if (!(instanceId in instances)) {
+				throw "could not find instance with id " + instanceId;
+			}
+			instance = instances[instanceId];
 			
 			//show processing of feed
 			reportStep(instance, feedInfo.id);
