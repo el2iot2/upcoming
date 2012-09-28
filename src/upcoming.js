@@ -87,7 +87,7 @@ var upcoming = function () {
 	}
 	
 	function resetObject(obj) {
-		for (prop in obj) { 
+		for (var prop in obj) { 
 			if (obj.hasOwnProperty(prop)) { 
 				delete obj[prop]; 
 			} 
@@ -142,13 +142,58 @@ var upcoming = function () {
 			evts: null, //configuration for the events display ui
 			prog: null //configuration for the status/progress ui
 		};
+		
+		config.query = {};
 		config.feeds = config.feeds || [];
 		config.evts = config.evts || {};
 		config.prog = config.prog || {};
 		config.prog.bdr = config.prog.bdr || {};
 		config.prog.bar = config.prog.bar || {};
 		config.prog.lbl = config.prog.lbl || {};
-		config.requestFeeds = config.requestFeeds || true;
+		
+		//prepare our query parameters for use
+		
+		//Always define max-results with a suitable default
+		config.query.max_results = "&max-results="+encodeURIComponent(config.max_results || 5);
+		
+		//general query
+		if ("q" in config) {
+			config.query.q = "&q="+encodeURIComponent(config.q || "q");
+		}
+		
+		//if category is explicitly specified, use it directly
+		if ("category" in config) {
+			config.query.category = "&category="+encodeURIComponent(config.category || "category");
+		} 
+		//otherwise look for an array and process 
+		else if ("categories" in config) {
+			//todo
+		}
+		
+		//only include a specific author
+		if ("author" in config) {
+			config.query.author = "&author="+encodeURIComponent(config.author || "author");
+		}
+		
+		if ("updated_min" in config) {			
+			config.query.updated_min = "&updated-min="+
+			toRFC3339(config.updated_min || "updated_min");
+		}
+		
+		if ("updated_max" in config) {
+			config.query.updated_max = "&updated-max="+
+			toRFC3339(config.updated_max || "updated_max");
+		}
+		
+		if ("published_min" in config) {
+			config.query.published_min = "&published-min="+
+			toRFC3339(config.published_min || "published_min");
+		}
+		
+		if ("published_max" in config) {
+			config.query.published_max = "&published-max="+
+			toRFC3339(config.published_max || "published_max");
+		}
 		
 		var iid = config.id || res.default_div_id;
 		//Build our instance
@@ -189,7 +234,7 @@ var upcoming = function () {
 				}
 			},
 			evts: [], //The listing of evt data
-			evtCats: buildEvtCatsFrom(config.moment || moment()), //Our instance event categories, relative to "now"
+			evtCats: buildEvtCatsFrom(config.moment || moment()), //Our instance event categories, relative to either the supplied moment, or "now"
 			getElementById: config.getElementById || 
 				function(id) { //closure to prevent losing "this" of document
 					return document.getElementById(id); },
@@ -285,12 +330,8 @@ var upcoming = function () {
 				instance.write("<script type='text/javascript' "+
 					"src='"+ 
 					feedInfo.uri + //already encoded
-					"?alt=json-in-script&callback=upcoming.callbacks."+
-					encodeURIComponent(feed.callback)+
-					"&orderby=starttime"+
-					"&max-results="+encodeURIComponent(instance.max_results)+
-					"&singleevents=true&sortorder=ascending&futureevents=true'></script>");
-				
+					buildQueryString(config, feed.callback) +
+					"'></script>");
 			}
 			else {
 				//A key exists, so retrieve it
@@ -307,6 +348,33 @@ var upcoming = function () {
 		//display the progress ui
 		reportStep(instance, "init");
 		return instance;
+	}
+	
+	function toRFC3339(input) {
+		if (input instanceof Date) {
+			return moment(input).format("YYYY-MM-DDTHH:mm:ssZZ");
+		}
+		if (moment.isMoment(input)) {
+			return input.format("YYYY-MM-DDTHH:mm:ssZZ");
+		}
+		return encodeURIComponent(value);
+	}
+	
+	//Inject relevant query parameters: https://developers.google.com/gdata/docs/1.0/reference#Queries
+	function buildQueryString(config, callback) {
+		return "?alt=json-in-script&callback=upcoming.callbacks."+encodeURIComponent(callback)+
+			"&singleevents=true"+
+			"&sortorder=ascending"+
+			"&futureevents=true"+
+			"&orderby=starttime"+
+			(config.query.q || "") + 
+			(config.query.category || "") + 
+			(config.query.author || "") + 
+			(config.query.updated_min || "") + 
+			(config.query.updated_max || "") + 
+			(config.query.published_min || "") + 
+			(config.query.published_max || "") + 
+			(config.query.max_results || "");
 	}
 	
 	//return a closure to handle an expected JSONP callback
@@ -331,9 +399,6 @@ var upcoming = function () {
 				createdBy: evt.author[0].name.$t || null,
 				id: getNextEvtId()
 			};
-		
-		//Calculate the event duration
-		ctx.duration = moment.duration(ctx.endMoment.diff(ctx.startMoment));
 	
 		//"where" field post-processing
 		if (isUrl(ctx.where)) {
@@ -364,21 +429,22 @@ var upcoming = function () {
 		}
 		
 		//when field
-		if (ctx.duration.asMilliseconds() === 0) {
+		if (ctx.allDay) {
 			ctx.when = ctx.startMoment.calendar();
 		}
 		else {
 			ctx.when = ctx.startMoment.calendar()+
 				" - "+
-				ctx.duration.humanize();
+				ctx.duration;
 		}
+
 		return ctx;
 	}
 	
 	//Build contexts (template view models) for our passed events
 	function buildEvtCtxs(entry) {
 		var evtCtxs = [];
-		if (entry !== null) {
+		if (entry !== null && typeof entry !== "undefined") {
 			evtCtxs[entry.length-1] = null; //Resize once to hold new events
 			for (var i = 0; i < entry.length; i++) {
 				evtCtxs[i] = buildEvtCtx(entry[i]);
@@ -506,6 +572,7 @@ var upcoming = function () {
 				if (evtInCat(evt, evtCat)) {
 					//since events and categories are sorted, we can skip categories that are no longer fruitful
 					evtCatStartIndex = evtIndex;
+					evtCat.formatEvt(evt);
 					evtCat.evts.push(evt);
 					break; //Get a new event
 				}
@@ -570,7 +637,13 @@ var upcoming = function () {
 				timeFormat: res.time_format,
 				multiDateFormat: res.date_format,
 				caption: res.event_cat_today,
-				range: sod.format(res.date_format)
+				range: sod.format(res.date_format),
+				formatEvt: function(evt) {
+						evt.allDay = evt.startTime.length <= 10, 
+						evt.twix = new Twix(evt.startMoment, evt.endMoment),
+						evt.duration = evt.twix.duration();
+						evt.range = evt.twix.format({showDate: false});
+				}
 			}, 
 			buildWeekRange(
 				{//week
@@ -581,7 +654,13 @@ var upcoming = function () {
 					dateFormat: res.date_format,
 					timeFormat: res.time_format,
 					multiDateFormat: res.date_format,
-					caption: res.event_cat_this_week
+					caption: res.event_cat_this_week,
+					formatEvt: function(evt) {
+						evt.allDay = evt.startTime.length <= 10, 
+						evt.twix = new Twix(evt.startMoment, evt.endMoment),
+						evt.duration = evt.twix.duration();
+						evt.range = evt.twix.format();
+					}
 				}
 			),	
 			buildWeekRange(
@@ -593,7 +672,13 @@ var upcoming = function () {
 					dateFormat: res.date_format,
 					timeFormat: res.time_format,
 					multiDateFormat: res.date_format,
-					caption: res.event_cat_next_week
+					caption: res.event_cat_next_week,
+					formatEvt: function(evt) {
+						evt.allDay = evt.startTime.length <= 10, 
+						evt.twix = new Twix(evt.startMoment, evt.endMoment),
+						evt.duration = evt.twix.duration();
+						evt.range = evt.twix.format();
+					}
 				}
 			), 
 			{//month
@@ -605,7 +690,13 @@ var upcoming = function () {
 				timeFormat: res.time_format,
 				multiDateFormat: res.date_format,
 				caption: res.event_cat_this_month,
-				range: som.format('MMM YYYY')
+				range: som.format('MMM YYYY'),
+				formatEvt: function(evt) {
+					evt.allDay = evt.startTime.length <= 10, 
+					evt.twix = new Twix(evt.startMoment, evt.endMoment),
+					evt.duration = evt.twix.duration();
+					evt.range = evt.twix.format();
+				}
 			}, 
 			{//nextMonth
 				start: snm,
@@ -616,7 +707,13 @@ var upcoming = function () {
 				timeFormat: res.time_format,
 				multiDateFormat: res.date_format,
 				caption: res.event_cat_next_month,
-				range: snm.format('MMM YYYY')
+				range: snm.format('MMM YYYY'),
+				formatEvt: function(evt) {
+					evt.allDay = evt.startTime.length <= 10, 
+					evt.twix = new Twix(evt.startMoment, evt.endMoment),
+					evt.duration = evt.twix.duration();
+					evt.range = evt.twix.format();
+				}
 			}, 
 			{//year
 				start: soy,
@@ -627,7 +724,13 @@ var upcoming = function () {
 				timeFormat: res.time_format,
 				multiDateFormat: res.date_format,
 				caption: res.event_cat_this_year,
-				range: soy.format('YYYY')
+				range: soy.format('YYYY'),
+				formatEvt: function(evt) {
+					evt.allDay = evt.startTime.length <= 10, 
+					evt.twix = new Twix(evt.startMoment, evt.endMoment),
+					evt.duration = evt.twix.duration();
+					evt.range = evt.twix.format();
+				}
 			}, 
 			{//upcoming
 				start: null,
@@ -638,7 +741,13 @@ var upcoming = function () {
 				timeFormat: res.time_format,
 				multiDateFormat: res.date_format,
 				caption: res.event_cat_upcoming,
-				range: ""
+				range: "",
+				formatEvt: function(evt) {
+					evt.allDay = evt.startTime.length <= 10, 
+					evt.twix = new Twix(evt.startMoment, evt.endMoment),
+					evt.duration = evt.twix.duration();
+					evt.range = evt.twix.format();
+				}
 			}
 		];
 	}

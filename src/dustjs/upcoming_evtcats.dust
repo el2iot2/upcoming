@@ -7,10 +7,10 @@
 			{#evts}
 				<div class="evt">
 					<span class="toggle" id="evt_tgl_{id}" onclick="upcoming.toggleEvtDetail({id});">+</span>
-					<span class="title">{?titleHref}<a href="{titleHref}">{title}</a>{:else}{title}{/titleHref}</span>
+					<span class="title">{?titleHref}<a href="{titleHref}">{title}</a>{:else}{title}{/titleHref} - {range} - {allDay} - {duration} </span>
 					<div class="detail" id="evt_dtl_{id}" style="display:none;">
 						<strong class="when">When</strong>
-						<span class="when">{when}</span><br />
+						<span class="when">{duration}</span><br />
 						<strong class="where">Where</strong>
 						<span class="where">{?whereHref}<a href="{whereHref}">{where}</a>{:else}{where}{/whereHref}</span><br />
 						<strong class="createdBy">Created by</strong>
