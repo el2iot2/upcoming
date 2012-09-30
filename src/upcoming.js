@@ -470,12 +470,12 @@ var upcoming = function () {
 		}]*/
 		var spans = [];
 		
-		function addTextSpan(text) {
-			spans.push({ text: text });
+		function addTextSpan(textSpan) {
+			spans.push({ text: textSpan });
 		}
 		
-		function addLinkSpan(link) {
-			spans.push({ text: link.url, href: link.url });
+		function addLinkSpan(linkSpan) {
+			spans.push({ text: linkSpan.url, href: linkSpan.url });
 		}
 		
 		//No links found, all text
@@ -485,9 +485,11 @@ var upcoming = function () {
 		else {
 			var firstLink = links[0],
 				lastLink = links[links.length - 1];
+			
 			//Was there text before the first link?
-			if (firstLink.startPosition > 0) {
-				addTextSpan(text.substring(0, firstLink.startPosition));
+			if (firstLink.indices[0] > 0) {
+				
+				addTextSpan(text.substring(0, firstLink.indices[0]));
 			}
 			//Handle single link
 			if (links.length === 1) {
@@ -501,16 +503,16 @@ var upcoming = function () {
 				//loop from the second
 				for (var i = 1; i<links.length; i++) {
 					//is there text between?
-					if (links[i].startPosition - prevLink.endPosition >= 2) {
-						addTextSpan(text.substring(prevLink.endPosition, links[i].startPosition));
+					if (links[i].indices[0] - prevLink.indices[1] >= 1) {
+						addTextSpan(text.substring(prevLink.indices[1], links[i].indices[0]));
 					}
 					//add link
 					addLinkSpan(prevLink = links[i]);
 				}
 			}
 			//Was there text after the links?
-			if (lastLink.endPosition < (text.length - 1)) {
-				spans.push({ text: text.substring(lastLink.endPosition)});
+			if (lastLink.indices[1] < (text.length)) {
+				spans.push({ text: text.substring(lastLink.indices[1])});
 			}
 		}
 		return { spans: spans };
