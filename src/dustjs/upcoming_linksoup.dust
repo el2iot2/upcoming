@@ -1,0 +1,3 @@
+{#spans} 
+	{?href}<a href="{href|u}"{?title} title="{title}"{/title}>{text}</a>{:else}{text}{/href}
+{/spans}

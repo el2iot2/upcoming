@@ -7,16 +7,24 @@
 			{#evts}
 				<div class="evt">
 					<span class="toggle" id="evt_tgl_{id}" onclick="upcoming.toggleEvtDetail({id});">+</span>
-					<span class="title">{?titleHref}<a href="{titleHref}">{title}</a>{:else}{title}{/titleHref} - {range} - {allDay} - {duration} </span>
+					<span class="title">{>upcoming_linksoup:title/}{?subtitle}<span class="subtitle">{subtitle}</span>{/subtitle}</span>
 					<div class="detail" id="evt_dtl_{id}" style="display:none;">
-						<strong class="when">When</strong>
+						{?when}
+						<strong class="when">{res.when}</strong>
 						<span class="when">{duration}</span><br />
-						<strong class="where">Where</strong>
-						<span class="where">{?whereHref}<a href="{whereHref}">{where}</a>{:else}{where}{/whereHref}</span><br />
-						<strong class="createdBy">Created by</strong>
+						{/when}
+						{?where}
+						<strong class="where">{res.where}</strong>
+						<span class="where">{>upcoming_linksoup:where/}</span><br />
+						{/where}
+						{?createdBy}
+						<strong class="createdBy">{res.created_by}</strong>
 						<span class="createdBy">{createdBy}</span><br />
-						<strong class="description">Description</strong>
-						<span class="description">{description}</span>
+						{/createdBy}
+						{?description}
+						<strong class="description">{res.description}</strong>
+						<span class="description">{>upcoming_linksoup:description/}</span>
+						{/description}
 					</div>
 				</div>
 			{/evts}

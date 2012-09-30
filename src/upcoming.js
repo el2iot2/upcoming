@@ -61,6 +61,7 @@ var upcoming = function () {
 		prog_render: "Rendering Events...",
 		prog_no_events_found: "No Events Found.",
 		event_cat_today: "Today",
+		event_cat_tomorrow: "Tomorrow",
 		event_cat_this_week: "This Week",
 		event_cat_next_week: "Next Week",
 		event_cat_this_month: "This Month",
@@ -72,6 +73,11 @@ var upcoming = function () {
 		err_format_cannot_render: "Upcoming.js: Error. Cannot render to element '{0}'. Does this id exist?",
 		err_format_config_id_invalid: "Upcoming.js: Error. Cannot render to element '{0}'. id not supported.",
 		err_config_required: "Upcoming.js: Error. Cannot render without configuration.",
+		when: "When",
+		where: "Where",
+		created_by: "Created By",
+		description: "Description",
+		link_symbol: ">",
 		last: "placeholder"
 	};
 
@@ -389,9 +395,6 @@ var upcoming = function () {
 		var 
 			i,
 			ctx = {
-				title: evt.title.$t || null,
-				description: evt.content.$t || null,
-				
 				createdBy: evt.author[0].name.$t || null,
 				id: getNextEvtId()
 			};
@@ -441,20 +444,37 @@ var upcoming = function () {
 				}
 			}
 		}
-
-		//find an event href
+		
+		//process the "content" structure into the context's description (if it exists)
+		if ("content" in evt && "$t" in evt.content) {
+			ctx.description = publicToLinkSoup(evt.content.$t);
+		}
+					
+		//process interesting links from the
 		//atom structures:
 		//http://tools.ietf.org/html/rfc4287#section-3.1.1
 		ctx.href = null;
 		for (i = 0; i < evt.link.length; i++) {
-			if (
-				evt.link[i].type == 'text/html' && 
-				evt.link[i].type == 'alternate') {
-				ctx.href = encodeURI(evt.link[i].href);
+			if (evt.link[i].type == 'text/html') {
+				if (evt.link[i].rel == 'alternate') {
+					ctx.href = encodeURI(evt.link[i].href);
+				}
+				else if (evt.link[i].rel == "related") {
+					ctx.related = ctx.related || [];
+					ctx.related.push({text: evt.link[i].title || evt.link[i].href, href: evt.link[i].href});
+				}
 			}
 		}
 		
-		//title link soup
+		//process the "content" structure into the context's description (if it exists)
+		if ("title" in evt && "$t" in evt.title) {
+			ctx.title = publicToLinkSoup(evt.title.$t);
+			//if we found no links (and only have one span), inject the event link
+			if (ctx.title.spans.length === 1) {
+				ctx.title.spans[0].text += " ";
+				ctx.title.spans.push({href: ctx.href, text: res.link_symbol });
+			}
+		}
 		
 		return ctx;
 	}
@@ -622,7 +642,7 @@ var upcoming = function () {
 	
 		//function to sort the events by date
 		function sortEvt(a, b) {
-			return a.startMoment.diff(b.startMoment);
+			return a.when.start.diff(b.when.start);
 		}
 		
 		var evts = instance.evts;
@@ -664,8 +684,8 @@ var upcoming = function () {
 			return false;
 		}
 		
-		var afterStart = evtCat.start.diff(evt.startMoment) <= 0;
-		var beforeEnd = evtCat.end.diff(evt.startMoment) > 0;
+		var afterStart = evtCat.start.diff(evt.when.start) <= 0;
+		var beforeEnd = evtCat.end.diff(evt.when.start) > 0;
 		
 		return afterStart && beforeEnd;
 	}
@@ -693,6 +713,8 @@ var upcoming = function () {
 		var 
 			sod = moment(ctx).sod(), //Start of day
 			eod = moment(ctx).eod(), //End of day
+			sot = moment(ctx).eod(), //Start of tomorrow
+			eot = moment(ctx).eod().add("day", 1), //End of tomorrow
 			sow = moment(sod).subtract("days", sod.day()),//Start of week
 			eow = moment(sow).add("weeks", 1), //End of week
 			snw = moment(eow), //Start of next week
@@ -710,14 +732,23 @@ var upcoming = function () {
 				end: eod,
 				div: null,
 				evts: [],
-				dateFormat: res.time_format,
-				timeFormat: res.time_format,
-				multiDateFormat: res.date_format,
 				caption: res.event_cat_today,
 				range: sod.format(res.date_format),
 				formatEvt: function(evt) {
-						evt.allDay = evt.startTime.length <= 10, 
-						evt.twix = new Twix(evt.startMoment, evt.endMoment),
+						evt.twix = new Twix(evt.when.start, evt.when.end),
+						evt.duration = evt.twix.duration();
+						evt.range = evt.twix.format({showDate: false});
+				}
+			}, 
+			{//tomorrow
+				start: sot,
+				end: eot,
+				div: null,
+				evts: [],
+				caption: res.event_cat_tomorrow,
+				range: sot.format(res.date_format),
+				formatEvt: function(evt) {
+						evt.twix = new Twix(evt.when.start, evt.when.end),
 						evt.duration = evt.twix.duration();
 						evt.range = evt.twix.format({showDate: false});
 				}
@@ -728,13 +759,9 @@ var upcoming = function () {
 					end: eow,
 					div: null,
 					evts: [],
-					dateFormat: res.date_format,
-					timeFormat: res.time_format,
-					multiDateFormat: res.date_format,
 					caption: res.event_cat_this_week,
 					formatEvt: function(evt) {
-						evt.allDay = evt.startTime.length <= 10, 
-						evt.twix = new Twix(evt.startMoment, evt.endMoment),
+						evt.twix = new Twix(evt.when.start, evt.when.end),
 						evt.duration = evt.twix.duration();
 						evt.range = evt.twix.format();
 					}
@@ -746,13 +773,9 @@ var upcoming = function () {
 					end: enw,
 					div: null,
 					evts: [],
-					dateFormat: res.date_format,
-					timeFormat: res.time_format,
-					multiDateFormat: res.date_format,
 					caption: res.event_cat_next_week,
 					formatEvt: function(evt) {
-						evt.allDay = evt.startTime.length <= 10, 
-						evt.twix = new Twix(evt.startMoment, evt.endMoment),
+						evt.twix = new Twix(evt.when.start, evt.when.end),
 						evt.duration = evt.twix.duration();
 						evt.range = evt.twix.format();
 					}
@@ -763,14 +786,11 @@ var upcoming = function () {
 				end: eom,
 				div: null,
 				evts: [],
-				dateFormat: res.date_format,
-				timeFormat: res.time_format,
 				multiDateFormat: res.date_format,
 				caption: res.event_cat_this_month,
 				range: som.format('MMM YYYY'),
 				formatEvt: function(evt) {
-					evt.allDay = evt.startTime.length <= 10, 
-					evt.twix = new Twix(evt.startMoment, evt.endMoment),
+					evt.twix = new Twix(evt.when.start, evt.when.end),
 					evt.duration = evt.twix.duration();
 					evt.range = evt.twix.format();
 				}
@@ -780,14 +800,10 @@ var upcoming = function () {
 				end: enm,
 				div: null,
 				evts: [],
-				dateFormat: res.date_format,
-				timeFormat: res.time_format,
-				multiDateFormat: res.date_format,
 				caption: res.event_cat_next_month,
 				range: snm.format('MMM YYYY'),
 				formatEvt: function(evt) {
-					evt.allDay = evt.startTime.length <= 10, 
-					evt.twix = new Twix(evt.startMoment, evt.endMoment),
+					evt.twix = new Twix(evt.when.start, evt.when.end),
 					evt.duration = evt.twix.duration();
 					evt.range = evt.twix.format();
 				}
@@ -797,14 +813,10 @@ var upcoming = function () {
 				end: eoy,
 				div: null,
 				evts: [],
-				dateFormat: res.date_format,
-				timeFormat: res.time_format,
-				multiDateFormat: res.date_format,
 				caption: res.event_cat_this_year,
 				range: soy.format('YYYY'),
 				formatEvt: function(evt) {
-					evt.allDay = evt.startTime.length <= 10, 
-					evt.twix = new Twix(evt.startMoment, evt.endMoment),
+					evt.twix = new Twix(evt.when.start, evt.when.end),
 					evt.duration = evt.twix.duration();
 					evt.range = evt.twix.format();
 				}
@@ -814,24 +826,15 @@ var upcoming = function () {
 				end: null,
 				div: null,
 				evts: [],
-				dateFormat: res.date_format,
-				timeFormat: res.time_format,
-				multiDateFormat: res.date_format,
 				caption: res.event_cat_upcoming,
 				range: "",
 				formatEvt: function(evt) {
-					evt.allDay = evt.startTime.length <= 10, 
-					evt.twix = new Twix(evt.startMoment, evt.endMoment),
+					evt.twix = new Twix(evt.when.start, evt.when.end),
 					evt.duration = evt.twix.duration();
 					evt.range = evt.twix.format();
 				}
 			}
 		];
-	}
-
-	function isUrl(value) {
-		var rx = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-		return rx.test(value);
 	}
 	
 	function isSimpleId(value) {
