@@ -390,26 +390,61 @@ var upcoming = function () {
 			i,
 			ctx = {
 				title: evt.title.$t || null,
-				where: evt.gd$where[0].valueString || null,
 				description: evt.content.$t || null,
-				startMoment: xsDateTimeToMoment(evt.gd$when[0].startTime) || moment(),
-				startTime: evt.gd$when[0].startTime,
-				endMoment: xsDateTimeToMoment(evt.gd$when[0].endTime) || moment(evt.startMoment),
-				endTime: evt.gd$when[0].endTime,
+				
 				createdBy: evt.author[0].name.$t || null,
 				id: getNextEvtId()
 			};
-	
-		//"where" field post-processing
-		if (isUrl(ctx.where)) {
-			//wrap in a link
-			ctx.whereHref = ctx.where;
+		
+		//default a "when" context
+		ctx.when = {};
+		
+		//process the "when" structure into the context
+		if ("gd$when" in evt && 
+			evt.gd$when instanceof Array &&
+			evt.gd$when.length >= 1) {
+			
+			var evtWhen = evt.gd$when[0] || {};
+			if ("startTime" in evtWhen) {
+				ctx.when.start = xsDateTimeToMoment(evtWhen.startTime);
+				//is it an "all day" event?
+				ctx.when.allDay = evtWhen.startTime.length <= 10; //is there time specified? i.e: "1970-01-01" vs "1970-01-01T..."
+			}
+			if ("endTime" in evtWhen) {
+				ctx.when.end = xsDateTimeToMoment(evtWhen.endTime);
+				//is it still an "all day" event?
+				ctx.when.allDay = 
+					(ctx.when.allDay || true) && 
+					evtWhen.endTime.length <= 10; //if the endTime has relevant hours, we shouldn't go "all day"
+			}
 		}
-		else {
-			ctx.whereHref = "http://maps.google.com/maps?hl=en&q="+encodeURI(ctx.where);
+				
+		//fallback on when data
+		ctx.when.start = ctx.when.start || moment();
+		ctx.when.end = ctx.when.end || ctx.when.start.add('d', 1);
+		if (!("allDay" in ctx.when)) {
+			ctx.when.allDay = true; 
+		}
+		
+		//process the "where" structure into the context if it exists
+		//https://developers.google.com/gdata/docs/1.0/elements#gdWhere
+		if ("gd$where" in evt && evt.gd$where instanceof Array) {
+			var evtWhereArray = evt.gd$where;
+			if (evtWhereArray.length >= 1 &&
+				"valueString" in evtWhereArray[0] &&
+				evtWhereArray[0].valueString &&
+				evtWhereArray[0].valueString.trim()) {
+				ctx.where = publicToLinkSoup(evtWhereArray[0].valueString);
+				//if we found no links (and only have one span), inject a maps link
+				if (ctx.where.spans.length === 1) {
+					ctx.where.spans[0].href = "http://maps.google.com/maps?hl=en&q="+encodeURI(evtWhereArray[0].valueString);
+				}
+			}
 		}
 
-		//event url
+		//find an event href
+		//atom structures:
+		//http://tools.ietf.org/html/rfc4287#section-3.1.1
 		ctx.href = null;
 		for (i = 0; i < evt.link.length; i++) {
 			if (
@@ -419,26 +454,66 @@ var upcoming = function () {
 			}
 		}
 		
-		//"title" field post-processing
-		if (isUrl(ctx.title)) {
-			//wrap in a link
-			ctx.titleHref = ctx.title;
-		}
-		else {
-			ctx.titleHref = ctx.href;
+		//title link soup
+		
+		return ctx;
+	}
+	
+	//Build contexts (template view models) for our passed events
+	//uses: https://github.com/twitter/twitter-text-js
+	function publicToLinkSoup(text) {
+		var links = twttr.txt.extractUrlsWithIndices(text);
+		/*Represented as
+		[{
+		  url: url,
+		  indices: [startPosition, endPosition]
+		}]*/
+		var spans = [];
+		
+		function addTextSpan(text) {
+			spans.push({ text: text });
 		}
 		
-		//when field
-		if (ctx.allDay) {
-			ctx.when = ctx.startMoment.calendar();
+		function addLinkSpan(link) {
+			spans.push({ text: link.url, href: link.url });
+		}
+		
+		//No links found, all text
+		if (links.length === 0) {
+			spans.push({ text: text });
 		}
 		else {
-			ctx.when = ctx.startMoment.calendar()+
-				" - "+
-				ctx.duration;
+			var firstLink = links[0],
+				lastLink = links[links.length - 1];
+			//Was there text before the first link?
+			if (firstLink.startPosition > 0) {
+				addTextSpan(text.substring(0, firstLink.startPosition));
+			}
+			//Handle single link
+			if (links.length === 1) {
+				addLinkSpan(firstLink);
+			}
+			else {
+				//push the firstLink
+				addLinkSpan(firstLink);
+				var prevLink = firstLink;
+			
+				//loop from the second
+				for (var i = 1; i<links.length; i++) {
+					//is there text between?
+					if (links[i].startPosition - prevLink.endPosition >= 2) {
+						addTextSpan(text.substring(prevLink.endPosition, links[i].startPosition));
+					}
+					//add link
+					addLinkSpan(prevLink = links[i]);
+				}
+			}
+			//Was there text after the links?
+			if (lastLink.endPosition < (text.length - 1)) {
+				spans.push({ text: text.substring(lastLink.endPosition)});
+			}
 		}
-
-		return ctx;
+		return { spans: spans };
 	}
 	
 	//Build contexts (template view models) for our passed events
@@ -843,6 +918,9 @@ var upcoming = function () {
 		render: publicRender,
 		toggleEvtDetail: publicToggleEvtDetail,
 		callbacks: publicCallbacks,
-		reset: publicReset
+		test: {
+			reset: publicReset,
+			toLinkSoup: publicToLinkSoup
+		}
 	};
 }();

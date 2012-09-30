@@ -7,7 +7,7 @@ BUILD_FILES := $(addprefix build/, upcoming.js upcoming_core.js upcoming.css ind
 BUILD_FILES += $(addprefix build/min/, upcoming.js upcoming_core.js upcoming.css index.html)
 
 # the javascript packaged into the full, final product
-JS_PARTS := $(addprefix src/, moment.js twix.min.js upcoming.js )
+JS_PARTS := $(addprefix src/, moment.js twix.min.js twitter-text-1.5.0.js upcoming.js  )
 JS_PARTS += $(addprefix src/dustjs/lib/, dust-core-1.0.0.js)
 JS_PARTS += $(addprefix src/dustjs/, upcoming_ui.js upcoming_evtcats.js)
 

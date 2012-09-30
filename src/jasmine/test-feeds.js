@@ -1,1559 +1,2089 @@
 var test_feeds = function () {
-return [{
-		"version" : "1.0",
-		"encoding" : "UTF-8",
-		"feed" : {
-			"xmlns" : "http://www.w3.org/2005/Atom",
-			"xmlns$openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
-			"xmlns$gCal" : "http://schemas.google.com/gCal/2005",
-			"xmlns$gd" : "http://schemas.google.com/g/2005",
-			"id" : {
-				"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full"
-			},
-			"updated" : {
-				"$t" : "2012-09-26T21:06:11.000Z"
-			},
-			"category" : [{
-					"scheme" : "http://schemas.google.com/g/2005#kind",
-					"term" : "http://schemas.google.com/g/2005#event"
-				}
-			],
-			"title" : {
-				"$t" : "US Holidays",
-				"type" : "text"
-			},
-			"subtitle" : {
-				"$t" : "US Holidays",
-				"type" : "text"
-			},
-			"link" : [{
-					"rel" : "alternate",
-					"type" : "text/html",
-					"href" : "http://www.google.com/calendar/embed?src=usa__en%40holiday.calendar.google.com"
-				}, {
-					"rel" : "http://schemas.google.com/g/2005#feed",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full"
-				}, {
-					"rel" : "http://schemas.google.com/g/2005#batch",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/batch"
-				}, {
-					"rel" : "self",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full?alt=json-in-script&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
-				}, {
-					"rel" : "next",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full?alt=json-in-script&start-index=6&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
-				}
-			],
-			"author" : [{
-					"name" : {
-						"$t" : "US Holidays"
+	return [{
+			"version" : "1.0",
+			"encoding" : "UTF-8",
+			"feed" : {
+				"xmlns" : "http://www.w3.org/2005/Atom",
+				"xmlns$openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
+				"xmlns$gCal" : "http://schemas.google.com/gCal/2005",
+				"xmlns$gd" : "http://schemas.google.com/g/2005",
+				"id" : {
+					"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full"
+				},
+				"updated" : {
+					"$t" : "2012-09-26T21:06:11.000Z"
+				},
+				"category" : [{
+						"scheme" : "http://schemas.google.com/g/2005#kind",
+						"term" : "http://schemas.google.com/g/2005#event"
 					}
-				}
-			],
-			"generator" : {
-				"$t" : "Google Calendar",
-				"version" : "1.0",
-				"uri" : "http://www.google.com/calendar"
-			},
-			"openSearch$totalResults" : {
-				"$t" : 90
-			},
-			"openSearch$startIndex" : {
-				"$t" : 1
-			},
-			"openSearch$itemsPerPage" : {
-				"$t" : 5
-			},
-			"gCal$timezone" : {
-				"value" : "UTC"
-			},
-			"gCal$timesCleaned" : {
-				"value" : 0
-			},
-			"entry" : [{
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4051a0dd23f82618950e5cedef9a352e078dc0ac2a"
-					},
-					"published" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"updated" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
+				],
+				"title" : {
+					"$t" : "US Holidays",
+					"type" : "text"
+				},
+				"subtitle" : {
+					"$t" : "US Holidays",
+					"type" : "text"
+				},
+				"link" : [{
+						"rel" : "alternate",
+						"type" : "text/html",
+						"href" : "http://www.google.com/calendar/embed?src=usa__en%40holiday.calendar.google.com"
+					}, {
+						"rel" : "http://schemas.google.com/g/2005#feed",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full"
+					}, {
+						"rel" : "http://schemas.google.com/g/2005#batch",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/batch"
+					}, {
+						"rel" : "self",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full?alt=json-in-script&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
+					}, {
+						"rel" : "next",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full?alt=json-in-script&start-index=6&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
+					}
+				],
+				"author" : [{
+						"name" : {
+							"$t" : "US Holidays"
 						}
-					],
-					"title" : {
-						"$t" : "Columbus Day",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=aEA1MWEwZGQyM2Y4MjYxODk1MGU1Y2VkZWY5YTM1MmUwNzhkYzBhYzJhIHVzYV9fZW5AaA",
-							"title" : "alternate"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4051a0dd23f82618950e5cedef9a352e078dc0ac2a"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "US Holidays"
+					}
+				],
+				"generator" : {
+					"$t" : "Google Calendar",
+					"version" : "1.0",
+					"uri" : "http://www.google.com/calendar"
+				},
+				"openSearch$totalResults" : {
+					"$t" : 90
+				},
+				"openSearch$startIndex" : {
+					"$t" : 1
+				},
+				"openSearch$itemsPerPage" : {
+					"$t" : 5
+				},
+				"gCal$timezone" : {
+					"value" : "UTC"
+				},
+				"gCal$timesCleaned" : {
+					"value" : 0
+				},
+				"entry" : [{
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4051a0dd23f82618950e5cedef9a352e078dc0ac2a"
+						},
+						"published" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
 							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4051a0dd23f82618950e5cedef9a352e078dc0ac2a/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "usa__en@holiday.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "US Holidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-10-09",
-							"startTime" : "2012-10-08"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "h@51a0dd23f82618950e5cedef9a352e078dc0ac2a@google.com"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4014437e41aee1056348ee7c0f1fb9d65b5347f509"
-					},
-					"published" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"updated" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Halloween",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=aEAxNDQzN2U0MWFlZTEwNTYzNDhlZTdjMGYxZmI5ZDY1YjUzNDdmNTA5IHVzYV9fZW5AaA",
-							"title" : "alternate"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4014437e41aee1056348ee7c0f1fb9d65b5347f509"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "US Holidays"
+						],
+						"title" : {
+							"$t" : "Columbus Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=aEA1MWEwZGQyM2Y4MjYxODk1MGU1Y2VkZWY5YTM1MmUwNzhkYzBhYzJhIHVzYV9fZW5AaA",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4051a0dd23f82618950e5cedef9a352e078dc0ac2a"
 							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4014437e41aee1056348ee7c0f1fb9d65b5347f509/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "usa__en@holiday.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "US Holidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-11-01",
-							"startTime" : "2012-10-31"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "h@14437e41aee1056348ee7c0f1fb9d65b5347f509@google.com"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40f9ec567666f6ad5ff825e78b74f0b96ca18f5729"
-					},
-					"published" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"updated" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Daylight Saving Time Ends",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=aEBmOWVjNTY3NjY2ZjZhZDVmZjgyNWU3OGI3NGYwYjk2Y2ExOGY1NzI5IHVzYV9fZW5AaA",
-							"title" : "alternate"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40f9ec567666f6ad5ff825e78b74f0b96ca18f5729"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "US Holidays"
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "US Holidays"
+								}
 							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40f9ec567666f6ad5ff825e78b74f0b96ca18f5729/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "usa__en@holiday.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "US Holidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-11-05",
-							"startTime" : "2012-11-04"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "h@f9ec567666f6ad5ff825e78b74f0b96ca18f5729@google.com"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40b555f541c43b701c961f6b556b50f2d204b2fa6b"
-					},
-					"published" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"updated" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Election Day",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=aEBiNTU1ZjU0MWM0M2I3MDFjOTYxZjZiNTU2YjUwZjJkMjA0YjJmYTZiIHVzYV9fZW5AaA",
-							"title" : "alternate"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40b555f541c43b701c961f6b556b50f2d204b2fa6b"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "US Holidays"
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4051a0dd23f82618950e5cedef9a352e078dc0ac2a/comments"
 							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40b555f541c43b701c961f6b556b50f2d204b2fa6b/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "usa__en@holiday.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "US Holidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-11-07",
-							"startTime" : "2012-11-06"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "h@b555f541c43b701c961f6b556b50f2d204b2fa6b@google.com"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40ba786cf21caa5b8f15ee73bbd9096733d8edcec1"
-					},
-					"published" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"updated" : {
-						"$t" : "2012-09-26T21:06:11.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Veterans Day",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=aEBiYTc4NmNmMjFjYWE1YjhmMTVlZTczYmJkOTA5NjczM2Q4ZWRjZWMxIHVzYV9fZW5AaA",
-							"title" : "alternate"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40ba786cf21caa5b8f15ee73bbd9096733d8edcec1"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "US Holidays"
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "usa__en@holiday.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "US Holidays"
 							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-09",
+								"startTime" : "2012-10-08"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "h@51a0dd23f82618950e5cedef9a352e078dc0ac2a@google.com"
 						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40ba786cf21caa5b8f15ee73bbd9096733d8edcec1/comments"
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4014437e41aee1056348ee7c0f1fb9d65b5347f509"
+						},
+						"published" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Halloween",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=aEAxNDQzN2U0MWFlZTEwNTYzNDhlZTdjMGYxZmI5ZDY1YjUzNDdmNTA5IHVzYV9fZW5AaA",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4014437e41aee1056348ee7c0f1fb9d65b5347f509"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "US Holidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%4014437e41aee1056348ee7c0f1fb9d65b5347f509/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "usa__en@holiday.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "US Holidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-11-01",
+								"startTime" : "2012-10-31"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "h@14437e41aee1056348ee7c0f1fb9d65b5347f509@google.com"
 						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "usa__en@holiday.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "US Holidays"
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40f9ec567666f6ad5ff825e78b74f0b96ca18f5729"
+						},
+						"published" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Daylight Saving Time Ends",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=aEBmOWVjNTY3NjY2ZjZhZDVmZjgyNWU3OGI3NGYwYjk2Y2ExOGY1NzI5IHVzYV9fZW5AaA",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40f9ec567666f6ad5ff825e78b74f0b96ca18f5729"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "US Holidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40f9ec567666f6ad5ff825e78b74f0b96ca18f5729/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "usa__en@holiday.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "US Holidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-11-05",
+								"startTime" : "2012-11-04"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "h@f9ec567666f6ad5ff825e78b74f0b96ca18f5729@google.com"
 						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-11-12",
-							"startTime" : "2012-11-11"
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40b555f541c43b701c961f6b556b50f2d204b2fa6b"
+						},
+						"published" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Election Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=aEBiNTU1ZjU0MWM0M2I3MDFjOTYxZjZiNTU2YjUwZjJkMjA0YjJmYTZiIHVzYV9fZW5AaA",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40b555f541c43b701c961f6b556b50f2d204b2fa6b"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "US Holidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40b555f541c43b701c961f6b556b50f2d204b2fa6b/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "usa__en@holiday.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "US Holidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-11-07",
+								"startTime" : "2012-11-06"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "h@b555f541c43b701c961f6b556b50f2d204b2fa6b@google.com"
 						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "h@ba786cf21caa5b8f15ee73bbd9096733d8edcec1@google.com"
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40ba786cf21caa5b8f15ee73bbd9096733d8edcec1"
+						},
+						"published" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-26T21:06:11.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Veterans Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=aEBiYTc4NmNmMjFjYWE1YjhmMTVlZTczYmJkOTA5NjczM2Q4ZWRjZWMxIHVzYV9fZW5AaA",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40ba786cf21caa5b8f15ee73bbd9096733d8edcec1"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "US Holidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/usa__en%40holiday.calendar.google.com/public/full/h%40ba786cf21caa5b8f15ee73bbd9096733d8edcec1/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "usa__en@holiday.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "US Holidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-11-12",
+								"startTime" : "2012-11-11"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "h@ba786cf21caa5b8f15ee73bbd9096733d8edcec1@google.com"
+						}
 					}
-				}
-			]
+				]
+			}
+		}, {
+			"version" : "1.0",
+			"encoding" : "UTF-8",
+			"feed" : {
+				"xmlns" : "http://www.w3.org/2005/Atom",
+				"xmlns$openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
+				"xmlns$gCal" : "http://schemas.google.com/gCal/2005",
+				"xmlns$gd" : "http://schemas.google.com/g/2005",
+				"id" : {
+					"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full"
+				},
+				"updated" : {
+					"$t" : "2012-09-27T03:26:58.000Z"
+				},
+				"category" : [{
+						"scheme" : "http://schemas.google.com/g/2005#kind",
+						"term" : "http://schemas.google.com/g/2005#event"
+					}
+				],
+				"title" : {
+					"$t" : "Geek Holidays",
+					"type" : "text"
+				},
+				"subtitle" : {
+					"$t" : "Calendar of geek holidays",
+					"type" : "text"
+				},
+				"link" : [{
+						"rel" : "http://schemas.google.com/g/2005#feed",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full"
+					}, {
+						"rel" : "http://schemas.google.com/g/2005#batch",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/batch"
+					}, {
+						"rel" : "self",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full?alt=json-in-script&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
+					}, {
+						"rel" : "next",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full?alt=json-in-script&start-index=6&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
+					}
+				],
+				"author" : [{
+						"name" : {
+							"$t" : "Geek Holidays"
+						}
+					}
+				],
+				"generator" : {
+					"$t" : "Google Calendar",
+					"version" : "1.0",
+					"uri" : "http://www.google.com/calendar"
+				},
+				"openSearch$totalResults" : {
+					"$t" : 749
+				},
+				"openSearch$startIndex" : {
+					"$t" : 1
+				},
+				"openSearch$itemsPerPage" : {
+					"$t" : 5
+				},
+				"gCal$timezone" : {
+					"value" : "America/New_York"
+				},
+				"gCal$timesCleaned" : {
+					"value" : 0
+				},
+				"entry" : [{
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688_20120928"
+						},
+						"published" : {
+							"$t" : "2007-02-24T19:56:28.000Z"
+						},
+						"updated" : {
+							"$t" : "1970-01-01T00:00:00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Ask a Stupid Question Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "Usually celebrated on the last school day of September.",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=XzZzcWsyY2kzNmtva2FiYTM4bDBqZ2I5azcwczQ4YmExNzEyNDRiOWg4b29qMmc5aDhvbzNlZWE2ODhfMjAxMjA5MjggM25jN3Uwb28wazQ2cGU2bnBlN2s2Mjl1YmhpZmptM3NAaQ",
+								"title" : "alternate"
+							}, {
+								"rel" : "related",
+								"type" : "text/html",
+								"href" : "http://en.wikipedia.org/wiki/Ask_a_Stupid_Question_Day"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688_20120928"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "Geek Holidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688_20120928/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : ""
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688",
+							"id" : "_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688",
+							"gd$when" : {
+								"startTime" : "2012-09-28"
+							}
+						},
+						"gd$who" : [{
+								"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "Geek Holidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-09-29",
+								"startTime" : "2012-09-28"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 8
+						},
+						"gCal$uid" : {
+							"value" : "75A2C51E-CEA8-488D-A8DB-1F11A1F079FB"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84_20120930T040000Z"
+						},
+						"published" : {
+							"$t" : "2008-07-16T16:41:35.000Z"
+						},
+						"updated" : {
+							"$t" : "1970-01-01T00:00:00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Banned Books Week",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "Free People Read Freely!\nCelebrated in the last week of September.",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=XzhvcGs2Y2hrOGNyajBiOWg4b3I0Y2I5azhjcms2YmExODkyazJiOWo2OHA0YWUxbjhncTM4ZDFuODRfMjAxMjA5MzBUMDQwMDAwWiAzbmM3dTBvbzBrNDZwZTZucGU3azYyOXViaGlmam0zc0Bp",
+								"title" : "alternate"
+							}, {
+								"rel" : "related",
+								"type" : "text/html",
+								"href" : "http://www.ala.org/ala/oif/bannedbooksweek/bannedbooksweek.htm"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84_20120930T040000Z"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "Geek Holidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84_20120930T040000Z/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : ""
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84",
+							"id" : "_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84",
+							"gd$when" : {
+								"startTime" : "2012-09-30T00:00:00.000-04:00"
+							}
+						},
+						"gd$who" : [{
+								"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "Geek Holidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-06T23:59:00.000-04:00",
+								"startTime" : "2012-09-30T00:00:00.000-04:00"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 12
+						},
+						"gCal$uid" : {
+							"value" : "F3C24C70-1F6F-4C7C-ABEA-322E87D4447A"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70_20121023T100200Z"
+						},
+						"published" : {
+							"$t" : "2007-02-24T19:29:08.000Z"
+						},
+						"updated" : {
+							"$t" : "1970-01-01T00:00:00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Mole Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "Chemistry holiday; date and time chosen to denote Avogadro's number (6.02??10^23)",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=XzZncGs4Z3BpOHAxMzhiOWw4NHNrNGI5azc0cGtjYmExNjRxazRiOWs2OHIzNGVhNThkMGs2YzFoNzBfMjAxMjEwMjNUMTAwMjAwWiAzbmM3dTBvbzBrNDZwZTZucGU3azYyOXViaGlmam0zc0Bp",
+								"title" : "alternate"
+							}, {
+								"rel" : "related",
+								"type" : "text/html",
+								"href" : "http://en.wikipedia.org/wiki/Mole_Day"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70_20121023T100200Z"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "Geek Holidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70_20121023T100200Z/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : ""
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70",
+							"id" : "_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70",
+							"gd$when" : {
+								"startTime" : "2012-10-23T06:02:00.000-04:00"
+							}
+						},
+						"gd$who" : [{
+								"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "Geek Holidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-23T18:02:00.000-04:00",
+								"startTime" : "2012-10-23T06:02:00.000-04:00"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 11
+						},
+						"gCal$uid" : {
+							"value" : "43DC2FB4-5A9B-493F-A15B-42629ECAC018"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g_20121124"
+						},
+						"published" : {
+							"$t" : "2007-02-24T19:17:24.000Z"
+						},
+						"updated" : {
+							"$t" : "1970-01-01T00:00:00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Evolution Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "Anniversary of first publication of Charles Darwin's \"On the Origin of Species.\"",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=XzZ0MTQyZTlqNnNxM2liYTI2Z3JqaWI5azhjb2o0YmEyNjhvazJiOW42Y3NqY2VhMTYwcmsyZ2kxOGdfMjAxMjExMjQgM25jN3Uwb28wazQ2cGU2bnBlN2s2Mjl1YmhpZmptM3NAaQ",
+								"title" : "alternate"
+							}, {
+								"rel" : "related",
+								"type" : "text/html",
+								"href" : "http://en.wikipedia.org/wiki/Evolution_Day"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g_20121124"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "GeekHolidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g_20121124/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : ""
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g",
+							"id" : "_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g",
+							"gd$when" : {
+								"startTime" : "2012-11-24"
+							}
+						},
+						"gd$who" : [{
+								"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "GeekHolidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-11-25",
+								"startTime" : "2012-11-24"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 9
+						},
+						"gCal$uid" : {
+							"value" : "7BA93749-B479-4C12-B21A-73969A07ABAD"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88_20121205"
+						},
+						"published" : {
+							"$t" : "2007-02-24T19: 13: 11.000Z"
+						},
+						"updated" : {
+							"$t" : "1970-01-01T00: 00: 00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "DayoftheNinja",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=Xzg4b2o4aDFrNm9xamFiOWc2dDJqMmI5azc1MjNnYmEyOGdxMzRiOWc3NHAzYWRoazcwczNpZDFsODhfMjAxMjEyMDUgM25jN3Uwb28wazQ2cGU2bnBlN2s2Mjl1YmhpZmptM3NAaQ",
+								"title" : "alternate"
+							}, {
+								"rel" : "related",
+								"type" : "text/html",
+								"href" : "http://en.wikipedia.org/wiki/Day_of_the_Ninja"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88_20121205"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "GeekHolidays"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88_20121205/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : ""
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88",
+							"id" : "_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88",
+							"gd$when" : {
+								"startTime" : "2012-12-05"
+							}
+						},
+						"gd$who" : [{
+								"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "GeekHolidays"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-12-06",
+								"startTime" : "2012-12-05"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 7
+						},
+						"gCal$uid" : {
+							"value" : "B14D4655-07E1-49D8-BD42-09256488945B"
+						}
+					}
+				]
+			}
+		}, {
+			"version" : "1.0",
+			"encoding" : "UTF-8",
+			"feed" : {
+				"xmlns" : "http://www.w3.org/2005/Atom",
+				"xmlns$openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
+				"xmlns$gCal" : "http://schemas.google.com/gCal/2005",
+				"xmlns$gd" : "http://schemas.google.com/g/2005",
+				"id" : {
+					"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full"
+				},
+				"updated" : {
+					"$t" : "2012-09-27T01: 21: 54.000Z"
+				},
+				"category" : [{
+						"scheme" : "http://schemas.google.com/g/2005#kind",
+						"term" : "http://schemas.google.com/g/2005#event"
+					}
+				],
+				"title" : {
+					"$t" : "PhasesoftheMoon",
+					"type" : "text"
+				},
+				"subtitle" : {
+					"$t" : "ShowstheprimaryphasesoftheMoon",
+					"type" : "text"
+				},
+				"link" : [{
+						"rel" : "alternate",
+						"type" : "text/html",
+						"href" : "http://www.google.com/calendar/embed?src=ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com"
+					}, {
+						"rel" : "http://schemas.google.com/g/2005#feed",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full"
+					}, {
+						"rel" : "http://schemas.google.com/g/2005#batch",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/batch"
+					}, {
+						"rel" : "self",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full?alt=json-in-script&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
+					}, {
+						"rel" : "next",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full?alt=json-in-script&start-index=6&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
+					}
+				],
+				"author" : [{
+						"name" : {
+							"$t" : "PhasesoftheMoon"
+						}
+					}
+				],
+				"generator" : {
+					"$t" : "GoogleCalendar",
+					"version" : "1.0",
+					"uri" : "http://www.google.com/calendar"
+				},
+				"openSearch$totalResults" : {
+					"$t" : 148
+				},
+				"openSearch$startIndex" : {
+					"$t" : 1
+				},
+				"openSearch$itemsPerPage" : {
+					"$t" : 5
+				},
+				"gCal$timezone" : {
+					"value" : "UTC"
+				},
+				"gCal$timesCleaned" : {
+					"value" : 0
+				},
+				"entry" : [{
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1348975140000"
+						},
+						"published" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"updated" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Fullmoon3: 19am",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNDg5NzUxNDAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "http://schemas.google.com/gCal/2005/webContent",
+								"href" : "http://www.google.com/calendar/images/full-moon.gif",
+								"title" : "Fullmoon3: 19am"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1348975140000"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "PhasesoftheMoon"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1348975140000/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "PhasesoftheMoon"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-01",
+								"startTime" : "2012-09-30"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "moonphase+1348975140000@google.com"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1349681580000"
+						},
+						"published" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"updated" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Lastquarter7: 33am",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNDk2ODE1ODAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "http://schemas.google.com/gCal/2005/webContent",
+								"href" : "http://www.google.com/calendar/images/last-quarter.gif",
+								"title" : "Lastquarter7: 33am"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1349681580000"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "PhasesoftheMoon"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1349681580000/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "PhasesoftheMoon"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-09",
+								"startTime" : "2012-10-08"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "moonphase+1349681580000@google.com"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350302520000"
+						},
+						"published" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"updated" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Newmoon12: 02pm",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNTAzMDI1MjAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "http://schemas.google.com/gCal/2005/webContent",
+								"href" : "http://www.google.com/calendar/images/new-moon.gif",
+								"title" : "Newmoon12: 02pm"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350302520000"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "PhasesoftheMoon"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350302520000/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "PhasesoftheMoon"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-16",
+								"startTime" : "2012-10-15"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "moonphase+1350302520000@google.com"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350876720000"
+						},
+						"published" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"updated" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Firstquarter3: 32am",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNTA4NzY3MjAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "http://schemas.google.com/gCal/2005/webContent",
+								"href" : "http://www.google.com/calendar/images/first-quarter.gif",
+								"title" : "Firstquarter3: 32am"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350876720000"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "PhasesoftheMoon"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350876720000/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "PhasesoftheMoon"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-23",
+								"startTime" : "2012-10-22"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "moonphase+1350876720000@google.com"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1351540200000"
+						},
+						"published" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"updated" : {
+							"$t" : "2008-11-18T00: 00: 00.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Fullmoon7: 50pm",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNTE1NDAyMDAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "http://schemas.google.com/gCal/2005/webContent",
+								"href" : "http://www.google.com/calendar/images/full-moon.gif",
+								"title" : "Fullmoon7: 50pm"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1351540200000"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "PhasesoftheMoon"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1351540200000/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{}
+							
+						],
+						"gd$who" : [{
+								"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "PhasesoftheMoon"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-30",
+								"startTime" : "2012-10-29"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "moonphase+1351540200000@google.com"
+						}
+					}
+				]
+			}
+		}, {
+			"version" : "1.0",
+			"encoding" : "UTF-8",
+			"feed" : {
+				"xmlns" : "http://www.w3.org/2005/Atom",
+				"xmlns$openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
+				"xmlns$gCal" : "http://schemas.google.com/gCal/2005",
+				"xmlns$gd" : "http://schemas.google.com/g/2005",
+				"id" : {
+					"$t" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full"
+				},
+				"updated" : {
+					"$t" : "2012-09-29T19:52:50.000Z"
+				},
+				"category" : [{
+						"scheme" : "http://schemas.google.com/g/2005#kind",
+						"term" : "http://schemas.google.com/g/2005#event"
+					}
+				],
+				"title" : {
+					"$t" : "Upcoming.js",
+					"type" : "text"
+				},
+				"subtitle" : {
+					"$t" : "A test calendar feed for Upcoming.js (http://github.com/automatonic/upcoming)",
+					"type" : "text"
+				},
+				"link" : [{
+						"rel" : "alternate",
+						"type" : "text/html",
+						"href" : "http://www.google.com/calendar/embed?src=8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com"
+					}, {
+						"rel" : "http://schemas.google.com/g/2005#feed",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full"
+					}, {
+						"rel" : "http://schemas.google.com/g/2005#batch",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/batch"
+					}, {
+						"rel" : "self",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full?alt=json-in-script&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
+					}, {
+						"rel" : "next",
+						"type" : "application/atom+xml",
+						"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full?alt=json-in-script&start-index=6&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
+					}
+				],
+				"author" : [{
+						"name" : {
+							"$t" : "Upcoming.js"
+						}
+					}
+				],
+				"generator" : {
+					"$t" : "Google Calendar",
+					"version" : "1.0",
+					"uri" : "http://www.google.com/calendar"
+				},
+				"openSearch$totalResults" : {
+					"$t" : 1081
+				},
+				"openSearch$startIndex" : {
+					"$t" : 1
+				},
+				"openSearch$itemsPerPage" : {
+					"$t" : 5
+				},
+				"gCal$timezone" : {
+					"value" : "America/Los_Angeles"
+				},
+				"gCal$timesCleaned" : {
+					"value" : 0
+				},
+				"gd$where" : {
+					"valueString" : "PST"
+				},
+				"entry" : [{
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/q30ojnmas1fb1ujp32be4qpp7s_20121001"
+						},
+						"published" : {
+							"$t" : "2012-09-29T19:38:38.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-29T19:38:38.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "All Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "All Day Description",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=cTMwb2pubWFzMWZiMXVqcDMyYmU0cXBwN3NfMjAxMjEwMDEgOG92cXF2MzF1ZDRwMzZuNmVvZnM2ZHQ3OGtAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/q30ojnmas1fb1ujp32be4qpp7s_20121001"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "Upcoming.js"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/q30ojnmas1fb1ujp32be4qpp7s_20121001/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : "Seattle, WA"
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/q30ojnmas1fb1ujp32be4qpp7s",
+							"id" : "q30ojnmas1fb1ujp32be4qpp7s",
+							"gd$when" : {
+								"startTime" : "2012-10-01"
+							}
+						},
+						"gd$who" : [{
+								"email" : "8ovqqv31ud4p36n6eofs6dt78k@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "Upcoming.js"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-02",
+								"startTime" : "2012-10-01"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.transparent"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 0
+						},
+						"gCal$uid" : {
+							"value" : "q30ojnmas1fb1ujp32be4qpp7s@google.com"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/25e9j4f44ooidevevrsoalk7ts_20121002"
+						},
+						"published" : {
+							"$t" : "2012-09-29T19:46:05.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-29T19:46:05.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "All Day, Two Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "An event that spans two full days.",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=MjVlOWo0ZjQ0b29pZGV2ZXZyc29hbGs3dHNfMjAxMjEwMDIgOG92cXF2MzF1ZDRwMzZuNmVvZnM2ZHQ3OGtAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/25e9j4f44ooidevevrsoalk7ts_20121002"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "Upcoming.js"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/25e9j4f44ooidevevrsoalk7ts_20121002/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : "http://www.automatonic.com"
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/25e9j4f44ooidevevrsoalk7ts",
+							"id" : "25e9j4f44ooidevevrsoalk7ts",
+							"gd$when" : {
+								"startTime" : "2012-10-02"
+							}
+						},
+						"gd$who" : [{
+								"email" : "8ovqqv31ud4p36n6eofs6dt78k@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "Upcoming.js"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-04",
+								"startTime" : "2012-10-02"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.transparent"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 1
+						},
+						"gCal$uid" : {
+							"value" : "25e9j4f44ooidevevrsoalk7ts@google.com"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/b9v78pqb1mm9kqisiec5ih4c3s_20121004T183000Z"
+						},
+						"published" : {
+							"$t" : "2012-09-29T19:50:39.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-29T19:50:39.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Lunch \"Hour\"",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "Some eating, some http://reddit.com, some http://news.ycombinator.com/, but not a lot of \u003cscript\u003ealert('evil data!')\u003c/script\u003e",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=Yjl2NzhwcWIxbW05a3Fpc2llYzVpaDRjM3NfMjAxMjEwMDRUMTgzMDAwWiA4b3ZxcXYzMXVkNHAzNm42ZW9mczZkdDc4a0Bn",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/b9v78pqb1mm9kqisiec5ih4c3s_20121004T183000Z"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "Upcoming.js"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/b9v78pqb1mm9kqisiec5ih4c3s_20121004T183000Z/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : "At the http://www.nbc.com/the-office/"
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/b9v78pqb1mm9kqisiec5ih4c3s",
+							"id" : "b9v78pqb1mm9kqisiec5ih4c3s",
+							"gd$when" : {
+								"startTime" : "2012-10-04T11:30:00.000-07:00"
+							}
+						},
+						"gd$who" : [{
+								"email" : "8ovqqv31ud4p36n6eofs6dt78k@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "Upcoming.js"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-04T13:00:00.000-07:00",
+								"startTime" : "2012-10-04T11:30:00.000-07:00"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.transparent"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 2
+						},
+						"gCal$uid" : {
+							"value" : "b9v78pqb1mm9kqisiec5ih4c3s@google.com"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/5d8gu498vds7i0iungmocs4rm0"
+						},
+						"published" : {
+							"$t" : "2012-09-29T19:52:50.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-29T19:52:50.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "Celebration and Recovery",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "Some time for enjoyment, and then resting afterwards.",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=NWQ4Z3U0OTh2ZHM3aTBpdW5nbW9jczRybTAgOG92cXF2MzF1ZDRwMzZuNmVvZnM2ZHQ3OGtAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/5d8gu498vds7i0iungmocs4rm0"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "Upcoming.js"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/5d8gu498vds7i0iungmocs4rm0/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : "You know a good place? \u003cscript\u003ealert('test escaping')\u003c/script\u003e"
+							}
+						],
+						"gd$who" : [{
+								"email" : "8ovqqv31ud4p36n6eofs6dt78k@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "Upcoming.js"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-10-06T11:00:00.000-07:00",
+								"startTime" : "2012-10-05T17:00:00.000-07:00"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.opaque"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 0
+						},
+						"gCal$uid" : {
+							"value" : "5d8gu498vds7i0iungmocs4rm0@google.com"
+						}
+					}, {
+						"id" : {
+							"$t" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/q30ojnmas1fb1ujp32be4qpp7s_20121101"
+						},
+						"published" : {
+							"$t" : "2012-09-29T19:38:38.000Z"
+						},
+						"updated" : {
+							"$t" : "2012-09-29T19:38:38.000Z"
+						},
+						"category" : [{
+								"scheme" : "http://schemas.google.com/g/2005#kind",
+								"term" : "http://schemas.google.com/g/2005#event"
+							}
+						],
+						"title" : {
+							"$t" : "All Day",
+							"type" : "text"
+						},
+						"content" : {
+							"$t" : "All Day Description",
+							"type" : "text"
+						},
+						"link" : [{
+								"rel" : "alternate",
+								"type" : "text/html",
+								"href" : "http://www.google.com/calendar/event?eid=cTMwb2pubWFzMWZiMXVqcDMyYmU0cXBwN3NfMjAxMjExMDEgOG92cXF2MzF1ZDRwMzZuNmVvZnM2ZHQ3OGtAZw",
+								"title" : "alternate"
+							}, {
+								"rel" : "self",
+								"type" : "application/atom+xml",
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/q30ojnmas1fb1ujp32be4qpp7s_20121101"
+							}
+						],
+						"author" : [{
+								"name" : {
+									"$t" : "Upcoming.js"
+								}
+							}
+						],
+						"gd$comments" : {
+							"gd$feedLink" : {
+								"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/q30ojnmas1fb1ujp32be4qpp7s_20121101/comments"
+							}
+						},
+						"gd$eventStatus" : {
+							"value" : "http://schemas.google.com/g/2005#event.confirmed"
+						},
+						"gd$where" : [{
+								"valueString" : "Seattle, WA"
+							}
+						],
+						"gd$originalEvent" : {
+							"href" : "http://www.google.com/calendar/feeds/8ovqqv31ud4p36n6eofs6dt78k%40group.calendar.google.com/public/full/q30ojnmas1fb1ujp32be4qpp7s",
+							"id" : "q30ojnmas1fb1ujp32be4qpp7s",
+							"gd$when" : {
+								"startTime" : "2012-11-01"
+							}
+						},
+						"gd$who" : [{
+								"email" : "8ovqqv31ud4p36n6eofs6dt78k@group.calendar.google.com",
+								"rel" : "http://schemas.google.com/g/2005#event.organizer",
+								"valueString" : "Upcoming.js"
+							}
+						],
+						"gd$when" : [{
+								"endTime" : "2012-11-02",
+								"startTime" : "2012-11-01"
+							}
+						],
+						"gd$transparency" : {
+							"value" : "http://schemas.google.com/g/2005#event.transparent"
+						},
+						"gCal$anyoneCanAddSelf" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanInviteOthers" : {
+							"value" : "true"
+						},
+						"gCal$guestsCanModify" : {
+							"value" : "false"
+						},
+						"gCal$guestsCanSeeGuests" : {
+							"value" : "true"
+						},
+						"gCal$sequence" : {
+							"value" : 0
+						},
+						"gCal$uid" : {
+							"value" : "q30ojnmas1fb1ujp32be4qpp7s@google.com"
+						}
+					}
+				]
+			}
 		}
-	}, {
-		"version" : "1.0",
-		"encoding" : "UTF-8",
-		"feed" : {
-			"xmlns" : "http://www.w3.org/2005/Atom",
-			"xmlns$openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
-			"xmlns$gCal" : "http://schemas.google.com/gCal/2005",
-			"xmlns$gd" : "http://schemas.google.com/g/2005",
-			"id" : {
-				"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full"
-			},
-			"updated" : {
-				"$t" : "2012-09-27T03:26:58.000Z"
-			},
-			"category" : [{
-					"scheme" : "http://schemas.google.com/g/2005#kind",
-					"term" : "http://schemas.google.com/g/2005#event"
-				}
-			],
-			"title" : {
-				"$t" : "Geek Holidays",
-				"type" : "text"
-			},
-			"subtitle" : {
-				"$t" : "Calendar of geek holidays",
-				"type" : "text"
-			},
-			"link" : [{
-					"rel" : "http://schemas.google.com/g/2005#feed",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full"
-				}, {
-					"rel" : "http://schemas.google.com/g/2005#batch",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/batch"
-				}, {
-					"rel" : "self",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full?alt=json-in-script&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
-				}, {
-					"rel" : "next",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full?alt=json-in-script&start-index=6&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
-				}
-			],
-			"author" : [{
-					"name" : {
-						"$t" : "Geek Holidays"
-					}
-				}
-			],
-			"generator" : {
-				"$t" : "Google Calendar",
-				"version" : "1.0",
-				"uri" : "http://www.google.com/calendar"
-			},
-			"openSearch$totalResults" : {
-				"$t" : 749
-			},
-			"openSearch$startIndex" : {
-				"$t" : 1
-			},
-			"openSearch$itemsPerPage" : {
-				"$t" : 5
-			},
-			"gCal$timezone" : {
-				"value" : "America/New_York"
-			},
-			"gCal$timesCleaned" : {
-				"value" : 0
-			},
-			"entry" : [{
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688_20120928"
-					},
-					"published" : {
-						"$t" : "2007-02-24T19:56:28.000Z"
-					},
-					"updated" : {
-						"$t" : "1970-01-01T00:00:00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Ask a Stupid Question Day",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "Usually celebrated on the last school day of September.",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=XzZzcWsyY2kzNmtva2FiYTM4bDBqZ2I5azcwczQ4YmExNzEyNDRiOWg4b29qMmc5aDhvbzNlZWE2ODhfMjAxMjA5MjggM25jN3Uwb28wazQ2cGU2bnBlN2s2Mjl1YmhpZmptM3NAaQ",
-							"title" : "alternate"
-						}, {
-							"rel" : "related",
-							"type" : "text/html",
-							"href" : "http://en.wikipedia.org/wiki/Ask_a_Stupid_Question_Day"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688_20120928"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "Geek Holidays"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688_20120928/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{
-							"valueString" : ""
-						}
-					],
-					"gd$originalEvent" : {
-						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688",
-						"id" : "_6sqk2ci36kokaba38l0jgb9k70s48ba171244b9h8ooj2g9h8oo3eea688",
-						"gd$when" : {
-							"startTime" : "2012-09-28"
-						}
-					},
-					"gd$who" : [{
-							"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "Geek Holidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-09-29",
-							"startTime" : "2012-09-28"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 8
-					},
-					"gCal$uid" : {
-						"value" : "75A2C51E-CEA8-488D-A8DB-1F11A1F079FB"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84_20120930T040000Z"
-					},
-					"published" : {
-						"$t" : "2008-07-16T16:41:35.000Z"
-					},
-					"updated" : {
-						"$t" : "1970-01-01T00:00:00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Banned Books Week",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "Free People Read Freely!\nCelebrated in the last week of September.",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=XzhvcGs2Y2hrOGNyajBiOWg4b3I0Y2I5azhjcms2YmExODkyazJiOWo2OHA0YWUxbjhncTM4ZDFuODRfMjAxMjA5MzBUMDQwMDAwWiAzbmM3dTBvbzBrNDZwZTZucGU3azYyOXViaGlmam0zc0Bp",
-							"title" : "alternate"
-						}, {
-							"rel" : "related",
-							"type" : "text/html",
-							"href" : "http://www.ala.org/ala/oif/bannedbooksweek/bannedbooksweek.htm"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84_20120930T040000Z"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "Geek Holidays"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84_20120930T040000Z/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{
-							"valueString" : ""
-						}
-					],
-					"gd$originalEvent" : {
-						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84",
-						"id" : "_8opk6chk8crj0b9h8or4cb9k8crk6ba1892k2b9j68p4ae1n8gq38d1n84",
-						"gd$when" : {
-							"startTime" : "2012-09-30T00:00:00.000-04:00"
-						}
-					},
-					"gd$who" : [{
-							"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "Geek Holidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-10-06T23:59:00.000-04:00",
-							"startTime" : "2012-09-30T00:00:00.000-04:00"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 12
-					},
-					"gCal$uid" : {
-						"value" : "F3C24C70-1F6F-4C7C-ABEA-322E87D4447A"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70_20121023T100200Z"
-					},
-					"published" : {
-						"$t" : "2007-02-24T19:29:08.000Z"
-					},
-					"updated" : {
-						"$t" : "1970-01-01T00:00:00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Mole Day",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "Chemistry holiday; date and time chosen to denote Avogadro's number (6.02??10^23)",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=XzZncGs4Z3BpOHAxMzhiOWw4NHNrNGI5azc0cGtjYmExNjRxazRiOWs2OHIzNGVhNThkMGs2YzFoNzBfMjAxMjEwMjNUMTAwMjAwWiAzbmM3dTBvbzBrNDZwZTZucGU3azYyOXViaGlmam0zc0Bp",
-							"title" : "alternate"
-						}, {
-							"rel" : "related",
-							"type" : "text/html",
-							"href" : "http://en.wikipedia.org/wiki/Mole_Day"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70_20121023T100200Z"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "Geek Holidays"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70_20121023T100200Z/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{
-							"valueString" : ""
-						}
-					],
-					"gd$originalEvent" : {
-						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70",
-						"id" : "_6gpk8gpi8p138b9l84sk4b9k74pkcba164qk4b9k68r34ea58d0k6c1h70",
-						"gd$when" : {
-							"startTime" : "2012-10-23T06:02:00.000-04:00"
-						}
-					},
-					"gd$who" : [{
-							"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "Geek Holidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-10-23T18:02:00.000-04:00",
-							"startTime" : "2012-10-23T06:02:00.000-04:00"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 11
-					},
-					"gCal$uid" : {
-						"value" : "43DC2FB4-5A9B-493F-A15B-42629ECAC018"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g_20121124"
-					},
-					"published" : {
-						"$t" : "2007-02-24T19:17:24.000Z"
-					},
-					"updated" : {
-						"$t" : "1970-01-01T00:00:00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Evolution Day",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "Anniversary of first publication of Charles Darwin's \"On the Origin of Species.\"",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=XzZ0MTQyZTlqNnNxM2liYTI2Z3JqaWI5azhjb2o0YmEyNjhvazJiOW42Y3NqY2VhMTYwcmsyZ2kxOGdfMjAxMjExMjQgM25jN3Uwb28wazQ2cGU2bnBlN2s2Mjl1YmhpZmptM3NAaQ",
-							"title" : "alternate"
-						}, {
-							"rel" : "related",
-							"type" : "text/html",
-							"href" : "http://en.wikipedia.org/wiki/Evolution_Day"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g_20121124"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "GeekHolidays"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g_20121124/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{
-							"valueString" : ""
-						}
-					],
-					"gd$originalEvent" : {
-						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g",
-						"id" : "_6t142e9j6sq3iba26grjib9k8coj4ba268ok2b9n6csjcea160rk2gi18g",
-						"gd$when" : {
-							"startTime" : "2012-11-24"
-						}
-					},
-					"gd$who" : [{
-							"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "GeekHolidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-11-25",
-							"startTime" : "2012-11-24"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 9
-					},
-					"gCal$uid" : {
-						"value" : "7BA93749-B479-4C12-B21A-73969A07ABAD"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88_20121205"
-					},
-					"published" : {
-						"$t" : "2007-02-24T19: 13: 11.000Z"
-					},
-					"updated" : {
-						"$t" : "1970-01-01T00: 00: 00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "DayoftheNinja",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=Xzg4b2o4aDFrNm9xamFiOWc2dDJqMmI5azc1MjNnYmEyOGdxMzRiOWc3NHAzYWRoazcwczNpZDFsODhfMjAxMjEyMDUgM25jN3Uwb28wazQ2cGU2bnBlN2s2Mjl1YmhpZmptM3NAaQ",
-							"title" : "alternate"
-						}, {
-							"rel" : "related",
-							"type" : "text/html",
-							"href" : "http://en.wikipedia.org/wiki/Day_of_the_Ninja"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88_20121205"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "GeekHolidays"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88_20121205/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{
-							"valueString" : ""
-						}
-					],
-					"gd$originalEvent" : {
-						"href" : "http://www.google.com/calendar/feeds/3nc7u0oo0k46pe6npe7k629ubhifjm3s%40import.calendar.google.com/public/full/_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88",
-						"id" : "_88oj8h1k6oqjab9g6t2j2b9k7523gba28gq34b9g74p3adhk70s3id1l88",
-						"gd$when" : {
-							"startTime" : "2012-12-05"
-						}
-					},
-					"gd$who" : [{
-							"email" : "3nc7u0oo0k46pe6npe7k629ubhifjm3s@import.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "GeekHolidays"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-12-06",
-							"startTime" : "2012-12-05"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 7
-					},
-					"gCal$uid" : {
-						"value" : "B14D4655-07E1-49D8-BD42-09256488945B"
-					}
-				}
-			]
-		}
-	}, {
-		"version" : "1.0",
-		"encoding" : "UTF-8",
-		"feed" : {
-			"xmlns" : "http://www.w3.org/2005/Atom",
-			"xmlns$openSearch" : "http://a9.com/-/spec/opensearchrss/1.0/",
-			"xmlns$gCal" : "http://schemas.google.com/gCal/2005",
-			"xmlns$gd" : "http://schemas.google.com/g/2005",
-			"id" : {
-				"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full"
-			},
-			"updated" : {
-				"$t" : "2012-09-27T01: 21: 54.000Z"
-			},
-			"category" : [{
-					"scheme" : "http://schemas.google.com/g/2005#kind",
-					"term" : "http://schemas.google.com/g/2005#event"
-				}
-			],
-			"title" : {
-				"$t" : "PhasesoftheMoon",
-				"type" : "text"
-			},
-			"subtitle" : {
-				"$t" : "ShowstheprimaryphasesoftheMoon",
-				"type" : "text"
-			},
-			"link" : [{
-					"rel" : "alternate",
-					"type" : "text/html",
-					"href" : "http://www.google.com/calendar/embed?src=ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com"
-				}, {
-					"rel" : "http://schemas.google.com/g/2005#feed",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full"
-				}, {
-					"rel" : "http://schemas.google.com/g/2005#batch",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/batch"
-				}, {
-					"rel" : "self",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full?alt=json-in-script&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
-				}, {
-					"rel" : "next",
-					"type" : "application/atom+xml",
-					"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full?alt=json-in-script&start-index=6&max-results=5&singleevents=true&futureevents=true&sortorder=ascending&orderby=starttime"
-				}
-			],
-			"author" : [{
-					"name" : {
-						"$t" : "PhasesoftheMoon"
-					}
-				}
-			],
-			"generator" : {
-				"$t" : "GoogleCalendar",
-				"version" : "1.0",
-				"uri" : "http://www.google.com/calendar"
-			},
-			"openSearch$totalResults" : {
-				"$t" : 148
-			},
-			"openSearch$startIndex" : {
-				"$t" : 1
-			},
-			"openSearch$itemsPerPage" : {
-				"$t" : 5
-			},
-			"gCal$timezone" : {
-				"value" : "UTC"
-			},
-			"gCal$timesCleaned" : {
-				"value" : 0
-			},
-			"entry" : [{
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1348975140000"
-					},
-					"published" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"updated" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Fullmoon3: 19am",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNDg5NzUxNDAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
-							"title" : "alternate"
-						}, {
-							"rel" : "http://schemas.google.com/gCal/2005/webContent",
-							"href" : "http://www.google.com/calendar/images/full-moon.gif",
-							"title" : "Fullmoon3: 19am"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1348975140000"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "PhasesoftheMoon"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1348975140000/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "PhasesoftheMoon"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-10-01",
-							"startTime" : "2012-09-30"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "moonphase+1348975140000@google.com"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1349681580000"
-					},
-					"published" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"updated" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Lastquarter7: 33am",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNDk2ODE1ODAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
-							"title" : "alternate"
-						}, {
-							"rel" : "http://schemas.google.com/gCal/2005/webContent",
-							"href" : "http://www.google.com/calendar/images/last-quarter.gif",
-							"title" : "Lastquarter7: 33am"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1349681580000"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "PhasesoftheMoon"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1349681580000/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "PhasesoftheMoon"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-10-09",
-							"startTime" : "2012-10-08"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "moonphase+1349681580000@google.com"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350302520000"
-					},
-					"published" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"updated" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Newmoon12: 02pm",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNTAzMDI1MjAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
-							"title" : "alternate"
-						}, {
-							"rel" : "http://schemas.google.com/gCal/2005/webContent",
-							"href" : "http://www.google.com/calendar/images/new-moon.gif",
-							"title" : "Newmoon12: 02pm"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350302520000"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "PhasesoftheMoon"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350302520000/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "PhasesoftheMoon"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-10-16",
-							"startTime" : "2012-10-15"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "moonphase+1350302520000@google.com"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350876720000"
-					},
-					"published" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"updated" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Firstquarter3: 32am",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNTA4NzY3MjAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
-							"title" : "alternate"
-						}, {
-							"rel" : "http://schemas.google.com/gCal/2005/webContent",
-							"href" : "http://www.google.com/calendar/images/first-quarter.gif",
-							"title" : "Firstquarter3: 32am"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350876720000"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "PhasesoftheMoon"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1350876720000/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "PhasesoftheMoon"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-10-23",
-							"startTime" : "2012-10-22"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "moonphase+1350876720000@google.com"
-					}
-				}, {
-					"id" : {
-						"$t" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1351540200000"
-					},
-					"published" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"updated" : {
-						"$t" : "2008-11-18T00: 00: 00.000Z"
-					},
-					"category" : [{
-							"scheme" : "http://schemas.google.com/g/2005#kind",
-							"term" : "http://schemas.google.com/g/2005#event"
-						}
-					],
-					"title" : {
-						"$t" : "Fullmoon7: 50pm",
-						"type" : "text"
-					},
-					"content" : {
-						"$t" : "",
-						"type" : "text"
-					},
-					"link" : [{
-							"rel" : "alternate",
-							"type" : "text/html",
-							"href" : "http://www.google.com/calendar/event?eid=bW9vbnBoYXNlKzEzNTE1NDAyMDAwMDAgaHQzamxmYWFjNWxmZDYyNjN1bGZoNHRxbDhAZw",
-							"title" : "alternate"
-						}, {
-							"rel" : "http://schemas.google.com/gCal/2005/webContent",
-							"href" : "http://www.google.com/calendar/images/full-moon.gif",
-							"title" : "Fullmoon7: 50pm"
-						}, {
-							"rel" : "self",
-							"type" : "application/atom+xml",
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1351540200000"
-						}
-					],
-					"author" : [{
-							"name" : {
-								"$t" : "PhasesoftheMoon"
-							}
-						}
-					],
-					"gd$comments" : {
-						"gd$feedLink" : {
-							"href" : "http://www.google.com/calendar/feeds/ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com/public/full/moonphase%2B1351540200000/comments"
-						}
-					},
-					"gd$eventStatus" : {
-						"value" : "http://schemas.google.com/g/2005#event.confirmed"
-					},
-					"gd$where" : [{}
-						
-					],
-					"gd$who" : [{
-							"email" : "ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com",
-							"rel" : "http://schemas.google.com/g/2005#event.organizer",
-							"valueString" : "PhasesoftheMoon"
-						}
-					],
-					"gd$when" : [{
-							"endTime" : "2012-10-30",
-							"startTime" : "2012-10-29"
-						}
-					],
-					"gd$transparency" : {
-						"value" : "http://schemas.google.com/g/2005#event.opaque"
-					},
-					"gCal$anyoneCanAddSelf" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanInviteOthers" : {
-						"value" : "true"
-					},
-					"gCal$guestsCanModify" : {
-						"value" : "false"
-					},
-					"gCal$guestsCanSeeGuests" : {
-						"value" : "true"
-					},
-					"gCal$sequence" : {
-						"value" : 1
-					},
-					"gCal$uid" : {
-						"value" : "moonphase+1351540200000@google.com"
-					}
-				}
-			]
-		}
-	}
-];
-}();
+	];
+}
+();
