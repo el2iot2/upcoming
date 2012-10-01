@@ -68,8 +68,10 @@ var upcoming = function () {
 		event_cat_next_month: "Next Month",
 		event_cat_this_year: "This Year",
 		event_cat_upcoming: "Upcoming",
-		time_format: "LT",
-		date_format: "LL",
+		date_format_today: "MMM Do",
+		date_format_tomorrow: "MMM Do",
+		date_format_month: "MMM",
+		date_format_month_year: "MMM YYYY",
 		err_format_cannot_render: "Upcoming.js: Error. Cannot render to element '{0}'. Does this id exist?",
 		err_format_config_id_invalid: "Upcoming.js: Error. Cannot render to element '{0}'. id not supported.",
 		err_config_required: "Upcoming.js: Error. Cannot render without configuration.",
@@ -485,8 +487,8 @@ var upcoming = function () {
 		var links = twttr.txt.extractUrlsWithIndices(text);
 		/*Represented as
 		[{
-		  url: url,
-		  indices: [startPosition, endPosition]
+			url: url,
+			indices: [startPosition, endPosition]
 		}]*/
 		var spans = [];
 		
@@ -689,25 +691,6 @@ var upcoming = function () {
 		
 		return afterStart && beforeEnd;
 	}
-
-	function buildWeekRange(week) {
-		week.startMonth = week.start.format('MMM')+" ";
-		week.endMonth = week.end.format('MMM')+" ";
-		if (week.startMonth === week.endMonth) {
-			week.range = week.startMonth+
-				week.start.format('Do')+
-				" - "+
-				week.end.format('Do');
-		}
-		else {
-			week.range = week.startMonth+
-				week.start.format('Do')+
-				" - "+
-				week.endMonth+
-				week.end.format('Do');
-		}
-		return week;
-	}
 	
 	function buildEvtCatsFrom(ctx) {
 		var 
@@ -725,7 +708,21 @@ var upcoming = function () {
 			enm = moment(snm).add("months", 1), //End of month
 			soy = moment(ctx).startOf("year"), //Start of year
 			eoy = moment(ctx).endOf("year"); //End of year
+	
+		function formatEvt(evt, showDate) {
+			evt.twix = new Twix(evt.when.start, evt.when.end, evt.when.allDay),
+			evt.duration = evt.twix.duration();
+			evt.subtitle = evt.twix.format({showDate: showDate});
+		}
 		
+		function defaultFormatEvt(evt) {
+			formatEvt(evt, true);
+		}
+		
+		function noDateFormatEvt(evt) {
+			formatEvt(evt, false);
+		}
+	
 		return [
 			{//today
 				start: sod,
@@ -733,12 +730,8 @@ var upcoming = function () {
 				div: null,
 				evts: [],
 				caption: res.event_cat_today,
-				range: sod.format(res.date_format),
-				formatEvt: function(evt) {
-						evt.twix = new Twix(evt.when.start, evt.when.end),
-						evt.duration = evt.twix.duration();
-						evt.range = evt.twix.format({showDate: false});
-				}
+				range: sod.format(res.date_format_today),
+				formatEvt: noDateFormatEvt
 			}, 
 			{//tomorrow
 				start: sot,
@@ -746,54 +739,35 @@ var upcoming = function () {
 				div: null,
 				evts: [],
 				caption: res.event_cat_tomorrow,
-				range: sot.format(res.date_format),
-				formatEvt: function(evt) {
-						evt.twix = new Twix(evt.when.start, evt.when.end),
-						evt.duration = evt.twix.duration();
-						evt.range = evt.twix.format({showDate: false});
-				}
+				range: sot.format(res.date_format_tomorrow),
+				formatEvt: noDateFormatEvt
 			}, 
-			buildWeekRange(
-				{//week
-					start: sow,
-					end: eow,
-					div: null,
-					evts: [],
-					caption: res.event_cat_this_week,
-					formatEvt: function(evt) {
-						evt.twix = new Twix(evt.when.start, evt.when.end),
-						evt.duration = evt.twix.duration();
-						evt.range = evt.twix.format();
-					}
-				}
-			),	
-			buildWeekRange(
-				{//nextWeek
-					start: snw,
-					end: enw,
-					div: null,
-					evts: [],
-					caption: res.event_cat_next_week,
-					formatEvt: function(evt) {
-						evt.twix = new Twix(evt.when.start, evt.when.end),
-						evt.duration = evt.twix.duration();
-						evt.range = evt.twix.format();
-					}
-				}
-			), 
+			{//week
+				start: sow,
+				end: eow,
+				div: null,
+				evts: [],
+				caption: res.event_cat_this_week,
+				range: new Twix(sow, eow, true).format(),
+				formatEvt: defaultFormatEvt
+			},	
+			{//nextWeek
+				start: snw,
+				end: enw,
+				div: null,
+				evts: [],
+				caption: res.event_cat_next_week,
+				range: new Twix(snw, enw, true).format(),
+				formatEvt: defaultFormatEvt
+			}, 
 			{//month
 				start: som,
 				end: eom,
 				div: null,
 				evts: [],
-				multiDateFormat: res.date_format,
 				caption: res.event_cat_this_month,
-				range: som.format('MMM YYYY'),
-				formatEvt: function(evt) {
-					evt.twix = new Twix(evt.when.start, evt.when.end),
-					evt.duration = evt.twix.duration();
-					evt.range = evt.twix.format();
-				}
+				range: som.format(res.date_format_month),
+				formatEvt: defaultFormatEvt
 			}, 
 			{//nextMonth
 				start: snm,
@@ -801,12 +775,8 @@ var upcoming = function () {
 				div: null,
 				evts: [],
 				caption: res.event_cat_next_month,
-				range: snm.format('MMM YYYY'),
-				formatEvt: function(evt) {
-					evt.twix = new Twix(evt.when.start, evt.when.end),
-					evt.duration = evt.twix.duration();
-					evt.range = evt.twix.format();
-				}
+				range: (sod.year() === snm.year()) ? snm.format(res.date_format_month) : snm.format(res.date_format_month_year),
+				formatEvt: defaultFormatEvt
 			}, 
 			{//year
 				start: soy,
@@ -815,11 +785,7 @@ var upcoming = function () {
 				evts: [],
 				caption: res.event_cat_this_year,
 				range: soy.format('YYYY'),
-				formatEvt: function(evt) {
-					evt.twix = new Twix(evt.when.start, evt.when.end),
-					evt.duration = evt.twix.duration();
-					evt.range = evt.twix.format();
-				}
+				formatEvt: defaultFormatEvt
 			}, 
 			{//upcoming
 				start: null,
@@ -827,12 +793,8 @@ var upcoming = function () {
 				div: null,
 				evts: [],
 				caption: res.event_cat_upcoming,
-				range: "",
-				formatEvt: function(evt) {
-					evt.twix = new Twix(evt.when.start, evt.when.end),
-					evt.duration = evt.twix.duration();
-					evt.range = evt.twix.format();
-				}
+				range: null,
+				formatEvt: defaultFormatEvt
 			}
 		];
 	}

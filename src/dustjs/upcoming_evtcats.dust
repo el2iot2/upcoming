@@ -1,8 +1,7 @@
 {#evtCats} 
 	{?evts} 
 		<div class="evtcat">
-			<span class="caption">{caption}</span>
-			<span class="range">{range}</span>
+			<span class="caption">{caption}{?range}<span class="range">{range}</span>{/range}</span>
 			<div class="evts">
 			{#evts}
 				<div class="evt">
