@@ -417,6 +417,24 @@ var upcoming = function () {
 			}
 			if ("endTime" in evtWhen) {
 				ctx.when.end = xsDateTimeToMoment(evtWhen.endTime);
+				if ("allDay" in ctx.when) {
+					//is it still an "all day" event?
+					ctx.when.allDay = ctx.when.allDay && 
+						evtWhen.endTime.length > 10;  //if the endTime has relevant hours, we shouldn't go "all day"
+					//check for an explicit "all day"
+					if ((!ctx.when.allDay) && 
+						(ctx.when.start.hours() === 0 && //very beginning of day
+							ctx.when.start.minutes() === 0 &&
+							ctx.when.start.seconds() === 0) && 
+						(ctx.when.end.hours() === 23 && //very end of day
+							ctx.when.end.minutes() === 59)) {
+						ctx.when.allDay = false;
+					}
+						
+				}
+				else {
+				}
+				
 				//is it still an "all day" event?
 				ctx.when.allDay = 
 					(ctx.when.allDay || true) && 
