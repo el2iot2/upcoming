@@ -1,6 +1,21 @@
 describe("Upcoming.js", function() {
 
 	describe("when calling the exposed function", function() {
+		describe("that builds each event context", function() {
+			it ("should handle 12AM - 11:59 PM as 'All Day'", function() {
+				var evt = {
+					"gd$when" : [{
+							"endTime" : "2012-10-06T23:59:00.000-04:00",
+							"startTime" : "2012-09-30T00:00:00.000-04:00"
+						}
+					]
+				};
+				
+				var ctx = upcoming.test.buildEvtCtx(evt);
+				expect(ctx.when.allDay).toBe(true);
+			});
+		});
+	
 		describe("that builds 'link soup'", function() {
 		
 			//Trying to get all the algorithmic edge cases:

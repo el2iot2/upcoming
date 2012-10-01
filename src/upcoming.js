@@ -393,13 +393,18 @@ var upcoming = function () {
 	}
 
 	//Build context (template view model) for our passed event
-	function buildEvtCtx(evt) {
+	function publicBuildEvtCtx(evt) {
 		var 
 			i,
 			ctx = {
-				createdBy: evt.author[0].name.$t || null,
 				id: getNextEvtId()
 			};
+			
+		if ("author" in evt && 
+			evt.author instanceof Array &&
+			evt.author.length >= 1) {
+			ctx.createdBy = evt.author[0].name.$t;
+		}
 		
 		//default a "when" context
 		ctx.when = {};
@@ -474,14 +479,16 @@ var upcoming = function () {
 		//atom structures:
 		//http://tools.ietf.org/html/rfc4287#section-3.1.1
 		ctx.href = null;
-		for (i = 0; i < evt.link.length; i++) {
-			if (evt.link[i].type == 'text/html') {
-				if (evt.link[i].rel == 'alternate') {
-					ctx.href = encodeURI(evt.link[i].href);
-				}
-				else if (evt.link[i].rel == "related") {
-					ctx.related = ctx.related || [];
-					ctx.related.push({text: evt.link[i].title || evt.link[i].href, href: evt.link[i].href});
+		if ("link" in evt) {
+			for (i = 0; i < evt.link.length; i++) {
+				if (evt.link[i].type == 'text/html') {
+					if (evt.link[i].rel == 'alternate') {
+						ctx.href = encodeURI(evt.link[i].href);
+					}
+					else if (evt.link[i].rel == "related") {
+						ctx.related = ctx.related || [];
+						ctx.related.push({text: evt.link[i].title || evt.link[i].href, href: evt.link[i].href});
+					}
 				}
 			}
 		}
@@ -493,6 +500,9 @@ var upcoming = function () {
 			if (ctx.title.spans.length === 1) {
 				ctx.title.spans[0].text += " ";
 				ctx.title.spans.push({href: ctx.href, text: res.link_symbol });
+			}
+			if (ctx.when.allDay) {
+				ctx.title.spans.push({text: "[AD]"});
 			}
 		}
 		
@@ -564,7 +574,7 @@ var upcoming = function () {
 		if (entry !== null && typeof entry !== "undefined") {
 			evtCtxs[entry.length-1] = null; //Resize once to hold new events
 			for (var i = 0; i < entry.length; i++) {
-				evtCtxs[i] = buildEvtCtx(entry[i]);
+				evtCtxs[i] = publicBuildEvtCtx(entry[i]);
 			}
 		}
 		return evtCtxs;
@@ -730,7 +740,7 @@ var upcoming = function () {
 		function formatEvt(evt, showDate) {
 			evt.twix = new Twix(evt.when.start, evt.when.end, evt.when.allDay),
 			evt.duration = evt.twix.duration();
-			evt.subtitle = evt.twix.format({showDate: showDate});
+			evt.subtitle = evt.twix.format({showDate: showDate, dayFormat: "Do"});
 		}
 		
 		function defaultFormatEvt(evt) {
@@ -749,7 +759,13 @@ var upcoming = function () {
 				evts: [],
 				caption: res.event_cat_today,
 				range: sod.format(res.date_format_today),
-				formatEvt: noDateFormatEvt
+				formatEvt: function(evt) {
+					evt.twix = new Twix(evt.when.start, evt.when.end, evt.when.allDay),
+					evt.duration = evt.twix.duration();
+					if (!evt.when.allDay) {
+						evt.subtitle = evt.twix.format({showDate: false});
+					}
+				}
 			}, 
 			{//tomorrow
 				start: sot,
@@ -905,7 +921,8 @@ var upcoming = function () {
 		callbacks: publicCallbacks,
 		test: {
 			reset: publicReset,
-			toLinkSoup: publicToLinkSoup
+			toLinkSoup: publicToLinkSoup,
+			buildEvtCtx: publicBuildEvtCtx
 		}
 	};
 }();
