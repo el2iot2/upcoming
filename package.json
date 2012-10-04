@@ -1,0 +1,38 @@
+{
+  "name": "upcoming",
+  "description": "Upcoming.js is a javascript widget to aggregate and display one or more public Google Calendar feeds.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/automatonic/upcoming",
+  "author": {
+    "name": "Elliott B. Edwards",
+    "url": "http://automatonic.net/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/automatonic/upcoming.git"
+  },
+  "bugs": {
+    "url": "https://github.com/automatonic/upcoming/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/automatonic/upcoming/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/upcoming",
+  "engines": {
+    "node": "*"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "~0.3.16",
+    "grunt-dust": "0.1.1",
+    "moment": "1.7.2",
+    "twitter-text": "1.5.0",
+    "twix": "0.1.6"
+  },
+  "keywords": []
+}

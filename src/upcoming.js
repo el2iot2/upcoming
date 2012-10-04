@@ -481,11 +481,11 @@ var upcoming = function () {
 		ctx.href = null;
 		if ("link" in evt) {
 			for (i = 0; i < evt.link.length; i++) {
-				if (evt.link[i].type == 'text/html') {
-					if (evt.link[i].rel == 'alternate') {
+				if (evt.link[i].type === 'text/html') {
+					if (evt.link[i].rel === 'alternate') {
 						ctx.href = encodeURI(evt.link[i].href);
 					}
-					else if (evt.link[i].rel == "related") {
+					else if (evt.link[i].rel === "related") {
 						ctx.related = ctx.related || [];
 						ctx.related.push({text: evt.link[i].title || evt.link[i].href, href: evt.link[i].href});
 					}
@@ -738,7 +738,7 @@ var upcoming = function () {
 			eoy = moment(ctx).endOf("year"); //End of year
 	
 		function formatEvt(evt, showDate) {
-			evt.twix = new Twix(evt.when.start, evt.when.end, evt.when.allDay),
+			evt.twix = new Twix(evt.when.start, evt.when.end, evt.when.allDay);
 			evt.duration = evt.twix.duration();
 			evt.subtitle = evt.twix.format({showDate: showDate, dayFormat: "Do"});
 		}
@@ -760,7 +760,7 @@ var upcoming = function () {
 				caption: res.event_cat_today,
 				range: sod.format(res.date_format_today),
 				formatEvt: function(evt) {
-					evt.twix = new Twix(evt.when.start, evt.when.end, evt.when.allDay),
+					evt.twix = new Twix(evt.when.start, evt.when.end, evt.when.allDay);
 					evt.duration = evt.twix.duration();
 					if (!evt.when.allDay) {
 						evt.subtitle = evt.twix.format({showDate: false});
@@ -843,12 +843,12 @@ var upcoming = function () {
 		var evtDiv, evtLink;
 		evtDiv = document.getElementById("evt_dtl_" + id);
 		evtLink = document.getElementById("evt_tgl_" + id);
-		if (evtDiv.style.display == 'none') {
+		if (evtDiv.style.display === 'none') {
 			evtDiv.style.display = 'block';
 			evtLink.innerHTML = "&minus;";
 		}
-		else if (evtDiv.style.display == 'block') {
-			evtDiv.style.display ='none';
+		else if (evtDiv.style.display === 'block') {
+			evtDiv.style.display = 'none';
 			evtLink.innerHTML = "+";
 		}
 	}
@@ -861,9 +861,10 @@ var upcoming = function () {
 		// text for regex matches
 		var remtxt = gCalTime;
 		
-		if (typeof gCalTime === 'undefined')
+		if (typeof gCalTime === 'undefined') {
 			return gCalTime; //return undefined
-
+		}
+        
 		function consume(retxt) 
 		{
 			var match = remtxt.match(new RegExp('^' + retxt));
@@ -886,7 +887,7 @@ var upcoming = function () {
 		var hours = 0;
 		var mins = 0;
 		// if a DATE-TIME was matched in the regex 
-		if (timeOrNot == 'T') 
+		if (timeOrNot === 'T') 
 		{
 			hours = consume('\\d{2}');
 			consume(':?');
@@ -895,7 +896,7 @@ var upcoming = function () {
 			var zuluOrNot = consume('Z');
 
 			// if time from server is not already in GMT, calculate offset
-			if (zuluOrNot != 'Z') 
+			if (zuluOrNot !== 'Z') 
 			{
 				var corrPlusMinus = consume('[\\+\\-]');
 				if (corrPlusMinus !== '') 
