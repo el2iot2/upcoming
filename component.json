@@ -1,0 +1,7 @@
+{
+  "name": "upcoming",
+  "version": "0.1.0",
+  "main": ["./src/upcoming.js","./src/upcoming.css"],
+  "dependencies": {
+  }
+}
