@@ -295,7 +295,7 @@ var upcoming = function () {
 			ctx = {
 				title: evt.title.$t || null,
 				where: evt.gd$where[0].valueString || null,
-				description: evt.content.$t || null,
+				description: replaceURLWithHTMLLinks(evt.content.$t) || null,
 				startMoment: xsDateTimeToMoment(evt.gd$when[0].startTime) || moment(),
 				startTime: evt.gd$when[0].startTime,
 				endMoment: xsDateTimeToMoment(evt.gd$when[0].endTime) || moment(evt.startMoment),
@@ -637,6 +637,11 @@ var upcoming = function () {
 			evtDiv.style.display ='none';
 			evtLink.innerHTML = "+";
 		}
+	}
+
+	function replaceURLWithHTMLLinks(text) {
+		var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+		return text.replace(exp,"<a href='$1'>$1</a>"); 
 	}
 
 	//Converts an xs:date or xs:dateTime formatted string into the local timezone

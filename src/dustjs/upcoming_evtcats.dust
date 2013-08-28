@@ -16,7 +16,7 @@
 						<strong class="createdBy">Created by</strong>
 						<span class="createdBy">{createdBy}</span><br />
 						<strong class="description">Description</strong>
-						<span class="description">{description}</span>
+						<span class="description">{description|s}</span>
 					</div>
 				</div>
 			{/evts}
